@@ -99,6 +99,126 @@ class InMemoryMockDB:
                 "summary": "A coalition of international charities and sovereign green funds backed the initiative to fund drone anti-logging security details and re-forestation.",
                 "category": "Politics",
                 "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "7",
+                "title": "European Central Bank Announces Transition to Digital Euro Framework by 2027",
+                "source": "BBC News",
+                "url": "https://www.bbc.com/news/business-65782928",
+                "image_url": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 94,
+                "status": "verified",
+                "summary": "The ECB has outlined a two-year preparation phase starting this month to finalize rules, select publishers, and test the digital currency network infrastructure before deployment.",
+                "category": "Economics",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "8",
+                "title": "DeepMind Unveils AlphaFold 3: Direct Biomolecular Interactions Mapping Launched",
+                "source": "Nature News",
+                "url": "https://www.nature.com/articles/d41586-024-01305-6",
+                "image_url": "https://images.unsplash.com/photo-1532187643603-ba119ca4109e?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 97,
+                "status": "verified",
+                "summary": "The new AI model goes beyond protein structures to predict interactions between DNA, RNA, chemical compounds, and cell structures, accelerating drug discovery pipelines.",
+                "category": "Tech",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "9",
+                "title": "India Space Agency Chandrayaan-4 Lunar Sample Retrieval Mission Details Released",
+                "source": "Times of India",
+                "url": "https://timesofindia.indiatimes.com/india/chandrayaan-4-mission-details",
+                "image_url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 95,
+                "status": "verified",
+                "summary": "ISRO has finalized the multi-module vehicle architecture to land on the lunar south pole, collect 2kg of regolith samples, and return them safely back to Earth.",
+                "category": "Science",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "10",
+                "title": "Global Semiconductor Alliance Projects 18% Supply Capacity Surge Following New Fab Builds",
+                "source": "Bloomberg News",
+                "url": "https://www.bloomberg.com/technology",
+                "image_url": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 93,
+                "status": "verified",
+                "summary": "Dozens of state-subsidized microchip factories in Arizona, Germany, and Japan are scheduled to begin volume production, easing global supply backlogs.",
+                "category": "Economics",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "11",
+                "title": "FDA Approves Breakthrough CRISPR Gene-Editing Therapy for Sickle Cell Treatment",
+                "source": "Reuters",
+                "url": "https://www.reuters.com/business/healthcare-lifesciences/",
+                "image_url": "https://images.unsplash.com/photo-1530026405186-ed1ea0ac7a63?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 98,
+                "status": "verified",
+                "summary": "The landmark approval marks the first therapeutic medicine utilizing CRISPR Cas9 editing to modify blood-producing cells, effectively curing the genetic condition.",
+                "category": "Science",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "12",
+                "title": "Renewable Energy Captures Record 43% Share of European Electricity Grid in 2025",
+                "source": "BBC News",
+                "url": "https://www.bbc.com/news/science-environment-65829871",
+                "image_url": "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 96,
+                "status": "verified",
+                "summary": "Wind and solar generation capacity surpassed fossil gas for the third consecutive quarter, supported by offshore North Sea power grid grid links.",
+                "category": "Economics",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "13",
+                "title": "Google Research Deploys Neural Weather Model for 10-Day Global Atmospheric Forecasts",
+                "source": "MIT Technology Review",
+                "url": "https://www.technologyreview.com/",
+                "image_url": "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 94,
+                "status": "verified",
+                "summary": "The AI model, GraphCast, predicts global weather variables at 0.25-degree resolution in under one minute, outperforming traditional physical simulation supercomputers.",
+                "category": "Tech",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "14",
+                "title": "World Health Organization Launches Global Health Treaty Draft for Future Response",
+                "source": "AP News",
+                "url": "https://apnews.com/article/un-health-treaty-pandemic-response",
+                "image_url": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 92,
+                "status": "verified",
+                "summary": "Delegates have finalized early-stage guidelines on visual diagnostics tracking, vaccine IP waivers, and resource distribution contracts for upcoming health crises.",
+                "category": "Politics",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "15",
+                "title": "New Quantum Encryption Protocol Successfully Deployed Over 500km Fiber Link",
+                "source": "Nature Physics",
+                "url": "https://www.nature.com/nphys/",
+                "image_url": "https://images.unsplash.com/photo-1601597111158-2fceff270190?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 95,
+                "status": "verified",
+                "summary": "Researchers achieved secure quantum key distribution using phase-coded states over standard telecommunication lines, setting a new record for physical encryption.",
+                "category": "Tech",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": "16",
+                "title": "United Nations Finalizes High Seas Protection Treaty for International Waters",
+                "source": "Bloomberg News",
+                "url": "https://www.bloomberg.com/features",
+                "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop&q=80",
+                "credibility_score": 96,
+                "status": "verified",
+                "summary": "The historic ocean protection framework places 30% of global marine sanctuaries under strict conservation limits, regulating commercial fishing and deep sea mining.",
+                "category": "Politics",
+                "created_at": datetime.now(timezone.utc).isoformat()
             }
         ]
 
