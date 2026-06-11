@@ -129,7 +129,7 @@ def analyze_article_text(text: str, url: str = None) -> dict:
            - 60-89: Partially true, mixed, or missing context.
            - 35-59: Misleading, clickbait, or unverified claims.
            - 0-34: Falsified, fabricated hoaxes, or extreme conspiracies.
-        3. Identify bias categories and clickbait percentages.
+        3. Identify bias categories, clickbait score, and sensationalism/tone warning score.
         4. Identify any logical fallacies present in the text (with exact sentence match, explanation, and correction).
         5. Return a detailed, professional forensic reasoning explaining what you found in the news database and which sources confirm or deny the claim.
         6. Suggest 2-3 real, active articles or sources backing your claim (e.g., from Google News, TOI, Reuters, etc.). For each, provide 'title', 'source' (e.g., 'Times of India', 'Reuters'), 'url', and 'credibility_score'.
@@ -140,8 +140,8 @@ def analyze_article_text(text: str, url: str = None) -> dict:
           "bias_category": "<Left / Center / Right / Satire / Extreme Conspiracy>",
           "metrics": {{
             "bias_score": <int 0-100>,
-            "clickbait_score": {style_score},
-            "sensationalism_score": {style_score},
+            "clickbait_score": <int 0-100 indicating clickbait style (incorporate our local stylistic score of {style_score}% as a baseline)>,
+            "sensationalism_score": <int 0-100 indicating sensationalism/tone (incorporate our local stylistic score of {style_score}% as a baseline)>,
             "logical_fallacies": [
               {{
                 "text": "<sentence from text>",
