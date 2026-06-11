@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Node environment directory
+node/
+node_modules/
+
+# Local configuration and logs
+.gemini/
+.system_generated/
+*.log
