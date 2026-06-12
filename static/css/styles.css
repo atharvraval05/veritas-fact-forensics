@@ -1,40 +1,40 @@
 /* Veritas Premium B2B Light & Colorful Stylesheet */
 
 :root {
-    /* Color System - Futuristic Cyber Dark Theme */
-    --color-bg: #090a0f;            /* Deep Space Black */
-    --color-bg-alt: #11131e;        /* Darker Navy Slate */
-    --color-surface: rgba(17, 19, 30, 0.75); /* Glassmorphic Dark Card */
-    --color-surface-hover: rgba(25, 27, 43, 0.85);
-    --color-border: rgba(99, 102, 241, 0.15); /* Glowing Indigo Border */
-    --color-border-hover: rgba(99, 102, 241, 0.35);
+    /* Color System - Bold Cyberpunk & Brutalist Theme (Apechain / EXAT inspired) */
+    --color-bg: #000000;            /* Pure Pitch Black */
+    --color-bg-alt: #090a0f;        /* Deep Space Charcoal */
+    --color-surface: rgba(14, 15, 23, 0.9); /* Outlined Dark Slate Card */
+    --color-surface-hover: rgba(22, 24, 37, 0.95);
+    --color-border: #1b202c;        /* Heavy Outline Borders */
+    --color-border-hover: #00ff66;  /* Glowing Toxic Neon Green */
     
-    /* Vibrant Gradients & Accent Colors */
-    --color-primary: #6366f1;       /* Radiant Indigo */
-    --color-secondary: #06b6d4;     /* Cyber Neon Cyan */
-    --color-accent-pink: #ec4899;   /* Hot Magenta */
-    --color-accent-purple: #a855f7; /* Royal Violet */
+    /* Vibrant Cyber Accents */
+    --color-primary: #00ff66;       /* Neon Toxic Green */
+    --color-secondary: #00e5ff;     /* Cyber Cyan */
+    --color-accent-pink: #ff007f;   /* Hot Neon Pink */
+    --color-accent-purple: #9d00ff; /* Electric Purple */
     
-    --color-success: #10b981;       /* Emerald Green */
+    --color-success: #00ff66;       /* Neon Green */
     --color-danger: #f43f5e;        /* Rose Red */
     --color-warning: #f59e0b;       /* Amber Gold */
     
-    /* Text Levels - Crisp and readable contrast */
-    --text-primary: #f8fafc;        /* High-Contrast White */
-    --text-secondary: #94a3b8;      /* Cool Muted Blue Slate */
-    --text-muted: #64748b;          /* Darker Gray Slate */
+    /* Text Levels */
+    --text-primary: #ffffff;        /* High-Contrast White */
+    --text-secondary: #8a99ad;      /* Cool Monospace Gray */
+    --text-muted: #4e5b6c;          /* Dark Slate Gray */
     
-    /* Typography */
+    /* Typography - Stark and Monospaced elements */
     --font-heading: 'Plus Jakarta Sans', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'Fira Code', monospace;
     
     /* Animations & Shadows */
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-speed: 0.25s;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    --shadow-lg: 0 20px 50px -10px rgba(99, 102, 241, 0.15), 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    --ease-in-out: cubic-bezier(0.25, 1, 0.5, 1);
+    --transition-speed: 0.2s;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.8);
+    --shadow-md: 0 10px 40px 0 rgba(0, 0, 0, 0.85);
+    --shadow-lg: 0 20px 60px 0 rgba(0, 255, 102, 0.08);
 }
 
 /* Base Reset */
@@ -2781,6 +2781,161 @@ input[type="text"] {
         gap: 20px;
     }
 }
+
+/* Brutalist Outlined Card overrides */
+.card, .hero-header-card, .modal-card, .latest-news-short-card {
+    border: 2px solid var(--color-border) !important;
+    border-radius: 4px !important;
+    background-color: var(--color-surface) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+.card:hover, .latest-news-short-card:hover {
+    transform: translateY(-2px) scale(1.005) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 8px 24px rgba(0, 255, 102, 0.12) !important;
+}
+.hero-header-card {
+    background: linear-gradient(135deg, #090a0f 0%, #152219 100%) !important;
+    border: 2px solid var(--color-primary) !important;
+}
+
+/* Cyberpunk Terminal Preloader */
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #030305;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+.preloader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+.preloader-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(0, 255, 102, 0.03), rgba(0, 229, 255, 0.02), rgba(255, 0, 127, 0.03));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+.loader-content {
+    text-align: center;
+    z-index: 2;
+    padding: 20px;
+}
+.terminal-loader-logo {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 72px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    display: inline-block;
+    animation: pulse-logo 1.5s infinite alternate ease-in-out;
+}
+@keyframes pulse-logo {
+    0% { transform: scale(0.95); filter: drop-shadow(0 0 10px rgba(0, 255, 102, 0.4)); }
+    100% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.8)); }
+}
+.loader-title {
+    font-family: var(--font-mono);
+    color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+}
+.progress-bar-loader {
+    width: 240px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    margin: 0 auto 16px auto;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.progress-fill-loader {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    animation: fill-loader 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes fill-loader {
+    0% { width: 0; }
+    50% { width: 60%; }
+    100% { width: 100%; }
+}
+.loader-status {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-primary);
+    letter-spacing: 1px;
+    animation: blink-status 0.8s infinite alternate;
+}
+@keyframes blink-status {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Scrolling Cylinder Footer */
+.scrolling-cylinder {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 44px;
+    background: linear-gradient(to bottom, #030305 0%, #151821 50%, #030305 100%);
+    border-top: 2px solid var(--color-border);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.8);
+}
+.scrolling-cylinder:hover {
+    border-top-color: var(--color-primary);
+    box-shadow: 0 -12px 30px rgba(0, 255, 102, 0.1);
+}
+.cylinder-shine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+.cylinder-ticker-wrap {
+    overflow: hidden;
+    width: 100%;
+    z-index: 1;
+}
+.cylinder-ticker-track {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+    white-space: nowrap;
+    animation: cylinder-scroll 30s linear infinite;
+    display: inline-block;
+    letter-spacing: 2px;
+}
+@keyframes cylinder-scroll {
+    0% { transform: translate3d(100%, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
+
 
 
 

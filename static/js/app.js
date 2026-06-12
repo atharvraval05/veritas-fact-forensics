@@ -1,6 +1,17 @@
 // Veritas Premium B2B Light & Colorful Controller
 document.addEventListener("DOMContentLoaded", () => {
     
+    // Preloader Animation Fade-out
+    const preloader = document.getElementById("preloader");
+    if (preloader) {
+        setTimeout(() => {
+            preloader.classList.add("fade-out");
+            setTimeout(() => {
+                preloader.style.display = "none";
+            }, 600);
+        }, 1500);
+    }
+    
     // Application State
     let state = {
         isMockMode: true,
