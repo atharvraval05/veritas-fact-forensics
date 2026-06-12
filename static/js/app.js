@@ -1,15 +1,41 @@
 // Veritas Premium B2B Light & Colorful Controller
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Preloader Animation Fade-out
+    // Preloader Animation with Logs
     const preloader = document.getElementById("preloader");
+    const preloaderFill = document.querySelector(".progress-bar-fill");
+    const preloaderStatus = document.querySelector(".loader-status-log");
+    const preloaderCounter = document.getElementById("preloaderCounter");
+    
     if (preloader) {
-        setTimeout(() => {
-            preloader.classList.add("fade-out");
-            setTimeout(() => {
-                preloader.style.display = "none";
-            }, 600);
-        }, 1500);
+        let progress = 0;
+        const logs = [
+            "INITIALIZING MATRIX CHRONICLE...",
+            "LINKING SUPABASE COMPILER MODULES...",
+            "ESTABLISHING CRYPTOGRAPHIC SHELL...",
+            "DECRYPTING LOGICAL FALLACY WEIGHTS...",
+            "PARSING METADATA INTEGRITY SIGNATURES...",
+            "SECURE FORENSICS GATEWAY CONNECTED!"
+        ];
+        
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 8) + 2;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    preloader.classList.add("fade-out");
+                    setTimeout(() => preloader.remove(), 600);
+                }, 400);
+            }
+            if (preloaderFill) preloaderFill.style.width = `${progress}%`;
+            if (preloaderCounter) preloaderCounter.textContent = `${String(progress).padStart(3, '0')}%`;
+            
+            const logIdx = Math.floor((progress / 100) * logs.length);
+            if (preloaderStatus && logs[logIdx]) {
+                preloaderStatus.innerHTML = `&gt; ${logs[logIdx]}<br>&gt; SYSTEM STATUS: OK`;
+            }
+        }, 80);
     }
     
     // Application State
