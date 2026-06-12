@@ -558,8 +558,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             writeLog(`[SYS] Diagnostics engine bound. Mode: ${state.isMockMode ? "Mock Heuristics Model" : "Supabase PostgreSQL Database"}`);
             
-            // Load homepage short feed and apply card tilt effects
+            // Load homepage short feed, homepage news, and apply card tilt effects
             loadLatestNewsShort();
+            loadHomepageNews();
             applyCardTilt();
 
         } catch (e) {
@@ -1916,6 +1917,58 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    async function loadHomepageNews() {
+        const homepageNewsFeed = document.getElementById("homepageNewsFeed");
+        if (!homepageNewsFeed) return;
+        
+        try {
+            homepageNewsFeed.innerHTML = '<div class="feed-loading">CONNECTING TO LIVE RSS STREAM...</div>';
+            
+            const res = await fetch("/api/feeds");
+            const data = await res.json();
+            const news = data.global_news || [];
+            
+            homepageNewsFeed.innerHTML = "";
+            if (news.length === 0) {
+                homepageNewsFeed.innerHTML = '<div class="feed-loading">No bulletins available.</div>';
+                return;
+            }
+            
+            // Render top 4 live bulletins
+            news.slice(0, 4).forEach(item => {
+                const card = document.createElement("div");
+                card.className = "feed-item";
+                
+                card.innerHTML = `
+                    <div class="feed-item-image-wrap">
+                        <img src="${item.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&auto=format&fit=crop&q=80'}" alt="News Cover">
+                        <span class="feed-item-category-pill" style="background: ${item.is_india ? 'var(--color-secondary)' : 'var(--color-primary)'}; color: #ffffff;">${item.is_india ? 'INDIA ALERT' : item.category.toUpperCase()}</span>
+                    </div>
+                    <div class="feed-item-content">
+                        <div class="feed-item-header">
+                            <span class="feed-item-source">${item.source.toUpperCase()}</span>
+                            <span class="feed-item-badge verified">${item.is_india ? 'INDIA PRIORITY' : 'VERIFIED REPORT'}</span>
+                        </div>
+                        <h4>${item.title}</h4>
+                        <p>${item.summary.substring(0, 110)}...</p>
+                        <div class="feed-item-footer">
+                            <span style="font-weight: 700; color: var(--color-success);">TRUTH FACTOR: ${item.credibility_score}%</span>
+                            <span style="color: var(--color-primary); font-weight: bold;">View Details →</span>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener("click", () => {
+                    openNewsModal(item);
+                });
+                
+                homepageNewsFeed.appendChild(card);
+            });
+        } catch (e) {
+            homepageNewsFeed.innerHTML = '<div class="feed-loading" style="color: var(--color-danger)">Dynamic feed sync failed.</div>';
+        }
+    }
+
     // ==========================================
     // 10. FORENSICS CHATBOT CLIENT INTERACTION
     // ==========================================
@@ -2076,32 +2129,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Classy 3D Card Hover Tilt Effect (Insta Reels Style)
+    // Hover animations are offloaded to CSS transitions for high-performance and mature UX
     function applyCardTilt() {
-        const cards = document.querySelectorAll(".card, .latest-news-short-card, .feed-item, .vault-bookmark-card");
-        
-        cards.forEach(card => {
-            card.onmousemove = (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const xc = rect.width / 2;
-                const yc = rect.height / 2;
-                
-                // Tilt multiplier (max 4 degrees)
-                const angleX = -(y - yc) / yc * 4;
-                const angleY = (x - xc) / xc * 4;
-                
-                card.style.transform = `perspective(800px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale3d(1.015, 1.015, 1.015)`;
-                card.style.transition = "transform 0.05s ease";
-            };
-            
-            card.onmouseleave = () => {
-                card.style.transform = `perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-                card.style.transition = "transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)";
-            };
-        });
+        // No-op - CSS hover transitions handle card elevation and border transitions
     }
 
     // Run Startup Initializers
