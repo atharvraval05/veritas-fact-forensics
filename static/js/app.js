@@ -1,6 +1,317 @@
 // Veritas Premium B2B Light & Colorful Controller
 document.addEventListener("DOMContentLoaded", () => {
     
+    // ==========================================
+    // 0. CYBERPUNK TERMINAL PRELOADER & PORTAL
+    // ==========================================
+    const preloader = document.getElementById("preloader");
+    const preloaderCounter = document.getElementById("preloaderCounter");
+    const progressBarFill = document.querySelector(".progress-bar-fill");
+    const loaderStatusLog = document.querySelector(".loader-status-log");
+    const enterConsoleBtn = document.getElementById("enterConsoleBtn");
+    const landingPortal = document.getElementById("landingPortal");
+    const operationalConsole = document.getElementById("operationalConsole");
+
+    // Boot Status Logs List
+    const bootLogs = [
+        "> INITIALIZING DATA MATRIX PIPELINE...",
+        "> ESTABLISHING SYMMETRIC DECRYPTION KEYS...",
+        "> RE-ROUTING NEURAL NETWORK WEIGHT CORRELATIONS...",
+        "> SHIELDING EXIF METADATA DETECTORS...",
+        "> SYNCING LOCAL TACTICAL AGENT TELEMETRY...",
+        "> VERITAS DEPLOYMENT READY."
+    ];
+
+    if (preloader) {
+        let count = 0;
+        let logIndex = 0;
+        const interval = setInterval(() => {
+            count += Math.floor(Math.random() * 8) + 4;
+            if (count >= 100) {
+                count = 100;
+                clearInterval(interval);
+                
+                // Finished, fade out
+                setTimeout(() => {
+                    preloader.style.opacity = "0";
+                    preloader.style.visibility = "hidden";
+                    writeLog("[SYS] Core systems online. Preloader bypass verified.");
+                }, 400);
+            }
+            
+            preloaderCounter.textContent = `${String(count).padStart(3, '0')}%`;
+            if (progressBarFill) {
+                progressBarFill.style.width = `${count}%`;
+            }
+            
+            // Randomly update status log text
+            if (count > (logIndex + 1) * 16 && logIndex < bootLogs.length) {
+                if (loaderStatusLog) {
+                    loaderStatusLog.innerHTML += `<br>${bootLogs[logIndex]}`;
+                }
+                logIndex++;
+            }
+        }, 80);
+    }
+
+    // Portal launch transition
+    if (enterConsoleBtn) {
+        enterConsoleBtn.addEventListener("click", () => {
+            landingPortal.style.opacity = "0";
+            landingPortal.style.transform = "translate3d(0, -50px, 0)";
+            landingPortal.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+            
+            setTimeout(() => {
+                landingPortal.style.display = "none";
+                operationalConsole.style.display = "flex";
+                operationalConsole.style.opacity = "0";
+                
+                // Trigger reflow
+                operationalConsole.offsetHeight;
+                operationalConsole.style.opacity = "1";
+                operationalConsole.style.transition = "opacity 0.8s ease";
+                writeLog("[SYS] Operational Console mounted.");
+                
+                // Force canvas repaint in case of display none glitches
+                const imageSection = document.getElementById("inspectorImageSection");
+                if (imageSection && imageSection.style.display === "block") {
+                    drawForensicCanvasOverlay(state.currentScanReport ? state.currentScanReport.regions : []);
+                }
+            }, 600);
+        });
+    }
+
+    // Interactive vectors globe init
+    initThreatGlobe();
+    // Network propagation diagram init
+    initSpreadNetwork();
+
+    function initThreatGlobe() {
+        const canvas = document.getElementById("threatGlobe");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        let angle = 0;
+        
+        const alerts = [
+            { lat: 0.2, lon: 0.5, name: "ALERT [DEEPFAKE]", size: 4, pulse: 0 },
+            { lat: -0.4, lon: -1.2, name: "BOTNET SPAM", size: 5, pulse: 0 },
+            { lat: 0.6, lon: -0.8, name: "FALLACY SPIKE", size: 3, pulse: 0 },
+            { lat: -0.1, lon: 2.1, name: "MANIPULATED COMP", size: 6, pulse: 0 }
+        ];
+
+        function drawGlobe() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const r = canvas.width * 0.38;
+            
+            // Atmosphere Glow
+            const glowGrad = ctx.createRadialGradient(cx, cy, r * 0.9, cx, cy, r * 1.15);
+            glowGrad.addColorStop(0, "rgba(0, 242, 254, 0)");
+            glowGrad.addColorStop(0.8, "rgba(0, 242, 254, 0.08)");
+            glowGrad.addColorStop(1, "rgba(0, 242, 254, 0)");
+            ctx.fillStyle = glowGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r * 1.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Outer sphere outline
+            ctx.strokeStyle = "rgba(0, 242, 254, 0.25)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Latitude lines
+            ctx.strokeStyle = "rgba(0, 242, 254, 0.08)";
+            for (let i = -4; i <= 4; i++) {
+                const latY = cy + (i * r) / 5;
+                const latR = Math.sqrt(r * r - (latY - cy) * (latY - cy));
+                ctx.beginPath();
+                ctx.ellipse(cx, latY, latR, latR * 0.25, 0, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Longitude lines (rotating)
+            ctx.strokeStyle = "rgba(0, 242, 254, 0.12)";
+            for (let i = 0; i < 6; i++) {
+                const lonAngle = angle + (i * Math.PI) / 6;
+                const rx = Math.sin(lonAngle) * r;
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, Math.abs(rx), r, 0, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Radar sweep sweep
+            const sweepAngle = (angle * 1.5) % (Math.PI * 2);
+            ctx.strokeStyle = "rgba(0, 242, 254, 0.15)";
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + Math.cos(sweepAngle) * r, cy + Math.sin(sweepAngle) * r);
+            ctx.stroke();
+            
+            // Draw Alerts
+            alerts.forEach(alert => {
+                alert.pulse += 0.04;
+                const rotLon = alert.lon + angle;
+                const x = cx + Math.sin(rotLon) * Math.cos(alert.lat) * r;
+                const y = cy + Math.sin(alert.lat) * r;
+                
+                const isFront = Math.cos(rotLon) >= 0;
+                if (isFront) {
+                    const pRadius = alert.size * (1 + Math.sin(alert.pulse) * 0.8);
+                    ctx.strokeStyle = "rgba(255, 0, 85, 0.6)";
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.arc(x, y, pRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = "var(--color-danger)";
+                    ctx.beginPath();
+                    ctx.arc(x, y, alert.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+                    ctx.font = "8px 'Fira Code', monospace";
+                    ctx.fillText(alert.name, x + 8, y + 3);
+                }
+            });
+
+            angle += 0.006;
+            requestAnimationFrame(drawGlobe);
+        }
+        drawGlobe();
+    }
+
+    function initSpreadNetwork() {
+        const canvas = document.getElementById("spreadNetwork");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        
+        const nodes = [];
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        
+        // center node
+        nodes.push({
+            x: centerX,
+            y: centerY,
+            r: 8,
+            color: "var(--color-danger)",
+            type: "source",
+            pulse: 0
+        });
+        
+        // intermediate layer
+        for (let i = 0; i < 4; i++) {
+            const a = (i * Math.PI) / 2 + 0.3;
+            nodes.push({
+                x: centerX + Math.cos(a) * 70,
+                y: centerY + Math.sin(a) * 50,
+                r: 5,
+                color: "var(--color-warning)",
+                type: "amplifier",
+                parent: 0
+            });
+        }
+        
+        // outer layer
+        for (let i = 0; i < 7; i++) {
+            const a = (i * Math.PI * 2) / 7;
+            const parentIdx = 1 + (i % 4);
+            nodes.push({
+                x: nodes[parentIdx].x + Math.cos(a) * 60,
+                y: nodes[parentIdx].y + Math.sin(a) * 40,
+                r: 3.5,
+                color: "var(--color-primary)",
+                type: "receiver",
+                parent: parentIdx
+            });
+        }
+        
+        let pulseTimer = 0;
+        const packets = [];
+
+        function animateSpread() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = "rgba(0, 242, 254, 0.15)";
+            ctx.lineWidth = 1.5;
+            nodes.forEach(node => {
+                if (node.parent !== undefined) {
+                    const parent = nodes[node.parent];
+                    ctx.beginPath();
+                    ctx.moveTo(parent.x, parent.y);
+                    ctx.lineTo(node.x, node.y);
+                    ctx.stroke();
+                }
+            });
+            
+            pulseTimer++;
+            if (pulseTimer % 60 === 0) {
+                for (let i = 1; i <= 4; i++) {
+                    packets.push({
+                        from: 0,
+                        to: i,
+                        progress: 0,
+                        speed: 0.02
+                    });
+                }
+            }
+            
+            ctx.fillStyle = "var(--color-accent-pink)";
+            for (let i = packets.length - 1; i >= 0; i--) {
+                const p = packets[i];
+                p.progress += p.speed;
+                
+                const fromNode = nodes[p.from];
+                const toNode = nodes[p.to];
+                
+                const px = fromNode.x + (toNode.x - fromNode.x) * p.progress;
+                const py = fromNode.y + (toNode.y - fromNode.y) * p.progress;
+                
+                ctx.beginPath();
+                ctx.arc(px, py, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (p.progress >= 1) {
+                    if (p.to >= 1 && p.to <= 4) {
+                        nodes.forEach((n, idx) => {
+                            if (n.parent === p.to) {
+                                packets.push({
+                                    from: p.to,
+                                    to: idx,
+                                    progress: 0,
+                                    speed: 0.03
+                                });
+                            }
+                        });
+                    }
+                    packets.splice(i, 1);
+                }
+            }
+            
+            nodes.forEach(node => {
+                node.pulse += 0.05;
+                if (node.type === "source") {
+                    ctx.strokeStyle = "rgba(255, 0, 85, 0.3)";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.r + Math.sin(node.pulse) * 4, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(animateSpread);
+        }
+        animateSpread();
+    }
+
     // Application State
     let state = {
         isMockMode: true,
@@ -1657,12 +1968,30 @@ document.addEventListener("DOMContentLoaded", () => {
         // Scroll body
         chatbotBody.scrollTop = chatbotBody.scrollHeight;
         
-        // Render Loading Indicator
+        // Render Intelligence loading steps
         const loadingEl = document.createElement("div");
         loadingEl.className = "chat-message assistant chat-loading";
-        loadingEl.innerHTML = `<span class="pulsing" style="color:var(--text-muted)">Agent typing...</span>`;
+        loadingEl.innerHTML = `<p class="mono-hud" style="color:var(--color-primary); font-size:10px; margin:0; line-height:1.4;"></p>`;
         chatbotBody.appendChild(loadingEl);
         chatbotBody.scrollTop = chatbotBody.scrollHeight;
+
+        const loadingParagraph = loadingEl.querySelector("p");
+        const steps = [
+            "[SYS] INGESTING PARAMETER STRINGS...",
+            "[SYS] RETRIEVING DOMAIN COMPASS METRICS...",
+            "[SYS] RESOLVING VERITAS FACT MATRIX..."
+        ];
+
+        let stepIndex = 0;
+        const stepTimer = setInterval(() => {
+            if (stepIndex < steps.length) {
+                loadingParagraph.innerHTML += `${stepIndex > 0 ? '<br>' : ''}${steps[stepIndex]}`;
+                chatbotBody.scrollTop = chatbotBody.scrollHeight;
+                stepIndex++;
+            } else {
+                clearInterval(stepTimer);
+            }
+        }, 300);
 
         try {
             const res = await fetch("/api/chat", {
@@ -1675,11 +2004,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             const data = await res.json();
             
-            // Remove loading
-            loadingEl.remove();
-            
-            // Render Assistant Message
-            appendMessageBubble("assistant", data.reply);
+            // Wait slightly if steps are still drawing
+            setTimeout(() => {
+                loadingEl.remove();
+                appendMessageBubble("assistant", data.reply, true);
+            }, Math.max(0, 950 - (stepIndex * 300)));
             
             // Update chat history state
             state.chatHistory.push({ role: "user", content: message });
@@ -1690,6 +2019,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             
         } catch (e) {
+            clearInterval(stepTimer);
             loadingEl.remove();
             appendMessageBubble("assistant", "Guidance link offline. Unable to reach forensics assistant.");
         }
@@ -1697,7 +2027,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chatbotBody.scrollTop = chatbotBody.scrollHeight;
     }
 
-    function appendMessageBubble(sender, text) {
+    function appendMessageBubble(sender, text, animate = false) {
         const bubble = document.createElement("div");
         bubble.className = `chat-message ${sender}`;
         
@@ -1707,8 +2037,29 @@ document.addEventListener("DOMContentLoaded", () => {
             .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
             .replace(/\*(.*?)\*/g, "<em>$1</em>");
             
-        bubble.innerHTML = `<p>${formatted}</p>`;
-        chatbotBody.appendChild(bubble);
+        if (sender === "assistant" && animate) {
+            bubble.innerHTML = `<p></p>`;
+            chatbotBody.appendChild(bubble);
+            const p = bubble.querySelector("p");
+            let charIndex = 0;
+            
+            // Draw in fast chunks/words for responsiveness but maintaining terminal scanner feel
+            const words = formatted.split(" ");
+            let wordIndex = 0;
+            
+            function typeWord() {
+                if (wordIndex < words.length) {
+                    p.innerHTML += (wordIndex > 0 ? " " : "") + words[wordIndex];
+                    wordIndex++;
+                    chatbotBody.scrollTop = chatbotBody.scrollHeight;
+                    setTimeout(typeWord, 15);
+                }
+            }
+            typeWord();
+        } else {
+            bubble.innerHTML = `<p>${formatted}</p>`;
+            chatbotBody.appendChild(bubble);
+        }
     }
 
     // ==========================================
