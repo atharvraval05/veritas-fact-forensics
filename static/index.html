@@ -7,104 +7,12 @@
     <!-- Google Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
     <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-    /* Inline Preloader Styles for Instant Render */
-    #preloader {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: #000000;
-        z-index: 100000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: 'Fira Code', monospace;
-        overflow: hidden;
-        transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
-    .preloader-overlay {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
-        background-size: 100% 4px;
-        pointer-events: none;
-        z-index: 1;
-    }
-    .loader-content {
-        text-align: left;
-        max-width: 450px;
-        width: 90%;
-        border: 2px solid #00ff66;
-        background-color: #0b0c10;
-        padding: 30px;
-        box-shadow: 0 0 30px rgba(0, 255, 102, 0.15);
-        position: relative;
-        z-index: 2;
-    }
-    .loader-header {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 2px solid #00ff66;
-        padding-bottom: 12px;
-        margin-bottom: 20px;
-        font-weight: bold;
-        font-size: 13px;
-        color: #00ff66;
-    }
-    .loader-title {
-        color: #ffffff;
-        font-size: 16px;
-        margin-bottom: 10px;
-        font-weight: 800;
-    }
-    .loader-status-log {
-        font-size: 11px;
-        color: #8a99ad;
-        height: 60px;
-        overflow: hidden;
-        line-height: 1.5;
-    }
-    .progress-bar-container {
-        width: 100%;
-        height: 6px;
-        background-color: #1b202c;
-        margin-top: 15px;
-        position: relative;
-    }
-    .progress-bar-fill {
-        height: 100%;
-        width: 0%;
-        background-color: #00ff66;
-    }
-    </style>
 </head>
 <body>
-
-    <!-- Cyberpunk Terminal Preloader -->
-    <div class="preloader" id="preloader">
-        <div class="preloader-overlay"></div>
-        <div class="loader-content">
-            <div class="loader-header">
-                <span>SYS_VERIFICATION: ACTIVE</span>
-                <span id="preloaderCounter">000%</span>
-            </div>
-            <h2 class="loader-title">VERITAS FACT GATEWAY v2.5</h2>
-            <div class="loader-status-log">
-                &gt; DECRYPTING FORENSICS MATRIX...
-            </div>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill"></div>
-            </div>
-        </div>
-    </div>
 
     <!-- Ambient Colorful Background Orbs -->
     <div class="ambient-orbs">
@@ -114,531 +22,46 @@
     </div>
     <div class="grid-mesh"></div>
 
-    <div class="app-frame-wrapper">
-        <!-- Vertical Brutalist Tech Sidebar Navigation -->
-        <aside class="app-sidebar">
-            <div class="sidebar-brand" id="logoHomeBtn">
-                <span class="brand-ver">V // 2.5</span>
-                <h1>VERITAS</h1>
-                <p class="brand-tag">FACT FORENSICS SUITE</p>
+    <!-- Main Navigation Header -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <div class="nav-logo" id="logoHomeBtn">
+                <div class="logo-box">V</div>
+                <div class="logo-text">
+                    <h2>VERITAS</h2>
+                    <span>FACT FORENSICS</span>
+                </div>
             </div>
             
-            <nav class="sidebar-nav">
-                <button class="nav-link active" data-page="radar">
-                    <span class="nav-num">01</span>
-                    <span class="nav-text">Audit Suite</span>
-                </button>
-                <button class="nav-link" data-page="news">
-                    <span class="nav-num">02</span>
-                    <span class="nav-text">World Chronicles</span>
-                </button>
-                <button class="nav-link" data-page="leaks">
-                    <span class="nav-num">03</span>
-                    <span class="nav-text">Disinfo Ledger</span>
-                </button>
-                <button class="nav-link" data-page="domain">
-                    <span class="nav-num">04</span>
-                    <span class="nav-text">Domain Compass</span>
-                </button>
-                <button class="nav-link" data-page="vault" id="navVaultBtn" style="display: none;">
-                    <span class="nav-num">05</span>
-                    <span class="nav-text">Forensic Vault</span>
-                </button>
+            <nav class="nav-links">
+                <button class="nav-link active" data-page="radar">Audit Suite</button>
+                <button class="nav-link" data-page="news">Verified News Room</button>
+                <button class="nav-link" data-page="leaks">Leaks & Rumors</button>
+                <button class="nav-link" data-page="domain">Domain Trust Registry</button>
+                <button class="nav-link" data-page="vault" id="navVaultBtn" style="display: none;">Forensic Vault</button>
             </nav>
-            
-            <div class="sidebar-footer">
-                <div class="system-status-box">
-                    <div class="status-node">
-                        <span class="status-dot pulsing"></span>
-                        <span class="status-label" id="dbStatus">SECURE SYSTEM</span>
-                    </div>
+
+            <div class="nav-actions">
+                <div class="status-node">
+                    <span class="status-dot pulsing"></span>
+                    <span class="status-label" id="dbStatus">SECURE SYSTEM</span>
                 </div>
                 <div class="user-action-zone" id="userPanel">
-                    <button class="btn btn-primary btn-block" id="authBtn">Agent Login</button>
+                    <button class="btn btn-secondary" id="authBtn">Agent Login</button>
                 </div>
             </div>
-        </aside>
-
-        <!-- Main Window Container -->
-        <div class="app-main-content">
-            <!-- Ticker Log Banner -->
-            <section class="ticker-banner">
-                <div class="ticker-label">LIVE FLOW:</div>
-                <div class="ticker-stream-wrap">
-                    <div class="ticker-stream" id="scanTicker">
-                        SYS: STANDING BY // DATABASE SECURED // TF-IDF LOCAL ML MODELS ACTIVE // STANDBY FOR PAYLOAD...
-                    </div>
-                </div>
-            </section>
-
-            <!-- MAIN VIEWPORT -->
-            <main class="dashboard-viewport">
-                
-                <!-- PAGE 1: AUDIT SUITE (Scanner, Reports, Chat) -->
-                <section class="page-view active" id="pageRadar">
-                    <!-- Hero Header -->
-                    <div class="hero-header-card">
-                        <h1>DECYPHER MEDIA WITH VERITAS RADAR</h1>
-                        <p>Verify headlines using our local TF-IDF machine learning pipeline. Perform visual EXIF integrity scans, deepfake video reviews, or consult our Verification Chatbot.</p>
-                    </div>
-
-                    <div class="radar-layout">
-                        <!-- Column 1: Scanner inputs & Chatbot helper -->
-                        <div class="radar-col-left">
-                            <!-- Scanner Card -->
-                            <div class="card scanner-card">
-                                <div class="card-header">
-                                    <h3>FORENSIC CORE INPUT</h3>
-                                    <div class="scan-type-tabs">
-                                        <button class="scan-tab active" data-tab="text">Text / Headline</button>
-                                        <button class="scan-tab" data-tab="url">News URL</button>
-                                        <button class="scan-tab" data-tab="image">Photo Scan</button>
-                                        <button class="scan-tab" data-tab="video">Video Scan</button>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Text Input -->
-                                    <div class="scan-input-group active" id="inputGroupText">
-                                        <label class="field-label">INPUT STATEMENT OR TEXT</label>
-                                        <textarea id="textInput" placeholder="Paste the claim, paragraph, or news story body to run our local machine learning classifier..."></textarea>
-                                    </div>
-
-                                    <!-- URL Input -->
-                                    <div class="scan-input-group" id="inputGroupUrl">
-                                        <label class="field-label">ARTICLE URL</label>
-                                        <div class="url-input-box">
-                                            <span class="url-badge">HTTPS://</span>
-                                            <input type="text" id="urlInput" placeholder="example-news-site.com/story-path">
-                                        </div>
-                                        <span class="field-desc">We will crawl, strip DOM scripting tags, and analyze the article.</span>
-                                    </div>
-
-                                    <!-- Image Input -->
-                                    <div class="scan-input-group" id="inputGroupImage">
-                                        <label class="field-label">UPLOAD SUSPICIOUS PHOTO (supports Ctrl+V clipboard paste)</label>
-                                        <div class="file-drop-container" id="dropZone">
-                                            <div class="drop-illustration">
-                                                <svg viewBox="0 0 24 24" width="32" height="32">
-                                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="var(--color-primary)"/>
-                                                </svg>
-                                            </div>
-                                            <h4>Drag photo here, browse, or paste with Ctrl+V</h4>
-                                            <p>JPG, PNG, WEBP files up to 4MB.</p>
-                                            <input type="file" id="imageInput" accept="image/*" class="hidden-file-input">
-                                        </div>
-                                        <div class="file-loaded-banner" id="filePreviewWrap" style="display: none;">
-                                            <div class="file-details">
-                                                <span class="file-icon">🖼️</span>
-                                                <span class="file-name" id="selectedFileName">screenshot.png</span>
-                                            </div>
-                                            <button class="btn btn-danger btn-sm" id="clearFileBtn">REMOVE</button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Video Input -->
-                                    <div class="scan-input-group" id="inputGroupVideo">
-                                        <label class="field-label">UPLOAD VIDEO STREAM FOR DEEPFAKE SCAN</label>
-                                        <div class="file-drop-container" id="dropZoneVideo">
-                                            <div class="drop-illustration">
-                                                <svg viewBox="0 0 24 24" width="32" height="32">
-                                                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" fill="var(--color-primary)"/>
-                                                </svg>
-                                            </div>
-                                            <h4>Drag video here or click to browse</h4>
-                                            <p>MP4, AVI, MOV, MKV files up to 10MB.</p>
-                                            <input type="file" id="videoInput" accept="video/*" class="hidden-file-input">
-                                        </div>
-                                        <div class="file-loaded-banner" id="videoPreviewWrap" style="display: none;">
-                                            <div class="file-details">
-                                                <span class="file-icon">📹</span>
-                                                <span class="file-name" id="selectedVideoName">deepfake_leak.mp4</span>
-                                            </div>
-                                            <button class="btn btn-danger btn-sm" id="clearVideoBtn">REMOVE</button>
-                                        </div>
-                                    </div>
-
-                                    <button class="btn btn-primary btn-block btn-lg btn-glow" id="runAuditBtn">
-                                        <span class="btn-text">RUN MACHINE LEARNING AUDIT</span>
-                                        <span class="loader-spinner" style="display: none;"></span>
-                                    </button>
-                                </div>
-
-                                <!-- Logs display -->
-                                <div class="term-console">
-                                    <div class="term-header">
-                                        <div class="term-dots"><span></span><span></span><span></span></div>
-                                        <span>PIPELINE TELEMETRY</span>
-                                    </div>
-                                    <div class="term-body" id="terminalLog">
-                                        [SYS] Local TF-IDF classifier loaded.<br>
-                                        [SYS] Standing by for input.
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Latest News In Short Card -->
-                            <div class="card latest-news-short-card">
-                                <div class="card-header">
-                                    <h3>LATEST NEWS IN SHORT</h3>
-                                    <span class="badge" style="background-color: var(--color-primary); color: black; font-size: 9px; padding: 2px 6px; border-radius: 2px; font-weight: 700;">LIVE FEED</span>
-                                </div>
-                                <div class="card-body" id="latestNewsShortFeed" style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
-                                    <div style="font-size: 13px; color: var(--text-secondary); text-align: center; font-style: italic;">Connecting to News Registry...</div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- Column 2: Audit Results report panel -->
-                        <div class="radar-col-right card card-report-panel" id="reportPanel">
-                            <!-- Blank state -->
-                            <div class="report-empty" id="reportBlankState">
-                                <div class="empty-graphic">
-                                    <div class="radar-pulse"></div>
-                                </div>
-                                <h3>Diagnostics Panel Standby</h3>
-                                <p>No active payload audited yet. Submit text, images, or videos on the left to review local machine learning scores and logical fallacies.</p>
-                            </div>
-
-                            <!-- Populate Report -->
-                            <div class="report-content" id="reportResults" style="display: none;">
-                                <div class="report-summary">
-                                    <div class="gauge-chart-wrap">
-                                        <svg class="circle-svg" viewBox="0 0 100 100">
-                                            <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
-                                            <circle class="circle-fill" id="gaugeFill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="132"></circle>
-                                        </svg>
-                                        <div class="circle-readout">
-                                            <h2 id="gaugeScoreVal">85%</h2>
-                                            <span>TRUTH INDEX</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="summary-meta">
-                                        <h3 class="target-title" id="reportHeadline">Audited Target Headline</h3>
-                                        <div class="verdict-banner" id="verdictBanner">
-                                            <span class="verdict-label" id="verdictLabel">Highly Authentic</span>
-                                            <p class="verdict-desc" id="verdictDesc">Description details...</p>
-                                        </div>
-                                        <div class="badge-set" style="margin-top: 10px;">
-                                            <span class="tag tag-bias" id="reportBiasBadge">Center Leaning</span>
-                                            <span class="tag tag-type" id="reportTypeBadge">Text Audit</span>
-                                            <span class="tag tag-subject" id="reportSubjectBadge" style="display: none;">Human Subject</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Authenticity Seal Stamp -->
-                                    <div class="verdict-stamp-wrap">
-                                        <div class="verdict-stamp" id="verdictStamp">VERIFIED TRUE</div>
-                                    </div>
-                                </div>
-
-                                <!-- Progress Metrics Grid -->
-                                <div class="metrics-grid">
-                                    <div class="metric-progress-card">
-                                        <div class="metric-info">
-                                            <span>Stylistic Sensationalism</span>
-                                            <strong id="clickbaitVal">20%</strong>
-                                        </div>
-                                        <div class="progress-track">
-                                            <div class="progress-bar" id="clickbaitBar" style="width: 20%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="metric-progress-card">
-                                        <div class="metric-info">
-                                            <span>Capitalization & Tone Warnings</span>
-                                            <strong id="intensityVal">35%</strong>
-                                        </div>
-                                        <div class="progress-track">
-                                            <div class="progress-bar" id="intensityBar" style="width: 35%;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Text Fallacy Inspector -->
-                                <div class="inspector-box" id="inspectorTextSection">
-                                    <div class="box-header">
-                                        <h4>LOGICAL FALLACY CHECKER</h4>
-                                        <span>Click highlights for critique</span>
-                                    </div>
-                                    <div class="reading-canvas" id="fallacyTextCanvas">
-                                        <!-- Text content with highlights -->
-                                    </div>
-                                    
-                                    <!-- Fallacy detail card -->
-                                    <div class="fallacy-detail-card" id="fallacyDetailsPopup" style="display: none;">
-                                        <div class="fallacy-title-row">
-                                            <span class="warning-triangle">⚠️</span>
-                                            <h5 id="popupFallacyName">FALLACY DETECTED</h5>
-                                        </div>
-                                        <p class="fallacy-explanation" id="popupFallacyExplanation">Explanation text</p>
-                                        <div class="correction-block">
-                                            <span class="correct-badge">OBJECTIVE REWRITE</span>
-                                            <p id="popupFallacyCorrection">Correction text</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Image Forensic Canvas -->
-                                <div class="inspector-box" id="inspectorImageSection" style="display: none;">
-                                    <div class="box-header">
-                                        <h4>VISUAL ANOMALY GRID</h4>
-                                        <span>Morphed boundaries or AI pixel textures highlighted</span>
-                                    </div>
-                                    <div class="canvas-image-wrapper">
-                                        <img id="forensicImagePreview" src="" alt="Forensic View">
-                                        <canvas id="forensicCanvasOverlay"></canvas>
-                                    </div>
-
-                                    <div class="exif-data-card">
-                                        <h5>EXIF STRUCTURAL METADATA</h5>
-                                        <div class="exif-rows" id="metadataRows">
-                                            <!-- Rows -->
-                                        </div>
-                                        <div class="exif-summary-note" id="metadataNote"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Video Forensics Results Display -->
-                                <div class="inspector-box" id="inspectorVideoSection" style="display: none;">
-                                    <div class="box-header">
-                                        <h4>VIDEO DEEPFAKE ANALYSIS</h4>
-                                        <span>Frame jump or audio sync alerts flagged</span>
-                                    </div>
-                                    <div class="video-preview-player-wrap">
-                                        <video id="forensicVideoPlayer" controls style="width: 100%; border-radius: 4px; margin-top: 12px; max-height: 240px; background: #000; border: 1px solid var(--color-border);"></video>
-                                    </div>
-                                    <div class="video-meta-grid" style="margin-top: 16px;">
-                                        <div class="video-meta-card">
-                                            <span>Analyzed File:</span>
-                                            <strong id="vidName">clip.mp4</strong>
-                                        </div>
-                                        <div class="video-meta-card">
-                                            <span>Guessed Codec:</span>
-                                            <strong id="vidCodec">H.264 AVC</strong>
-                                        </div>
-                                    </div>
-                                    <div class="video-anomalies-list">
-                                        <h5>DETECTED GLITCH SIGNATURES</h5>
-                                        <ul class="anomaly-ul" id="videoAnomaliesUl">
-                                            <!-- Injected -->
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <!-- Reasoning / ML verdict -->
-                                <div class="verdict-block">
-                                    <h5>MACHINE LEARNING AUDIT DECISION</h5>
-                                    <p id="reportReasoningText">Conclusion details...</p>
-                                </div>
-
-                                <!-- Related Chronicles Section -->
-                                <div class="related-news-section" id="relatedNewsSection">
-                                    <h4 class="related-news-header">RELATED VERIFIED CHRONICLES</h4>
-                                    <div class="related-grid" id="relatedNewsGrid">
-                                        <!-- Cards injected -->
-                                    </div>
-                                </div>
-
-                                <div class="results-actions" style="margin-top: 24px;">
-                                    <button class="btn btn-secondary" id="saveBookmarkBtn">Bookmark Report</button>
-                                    <button class="btn btn-secondary" id="shareReportBtn">Copy Share URL</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 2: VERIFIED NEWS ROOM -->
-                <section class="page-view" id="pageNews">
-                    <div class="page-header-simple">
-                        <h1>VERIFIED WORLD CHRONICLES</h1>
-                        <p>A collection of current affairs verified by our local Scikit-Learn TF-IDF classifier. Click the direct source links to view original publications.</p>
-                    </div>
-                    
-                    <div class="news-filters-row">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" placeholder="Search verified database..." id="newsSearchInput">
-                        </div>
-                        <div class="filter-badges">
-                            <button class="filter-btn active">All Topics</button>
-                            <button class="filter-btn">Politics</button>
-                            <button class="filter-btn">Science</button>
-                            <button class="filter-btn">Economics</button>
-                            <button class="filter-btn">Tech</button>
-                        </div>
-                    </div>
-
-                    <div class="news-grid" id="verifiedNewsFeed">
-                        <!-- Injected dynamically -->
-                    </div>
-                </section>
-
-                <!-- PAGE 3: LEAKS & RUMORS LEDGER -->
-                <section class="page-view" id="pageLeaks">
-                    <div class="page-header-simple">
-                        <h1>VIRAL RUMORS & DEBUNK REGISTRY</h1>
-                        <p>Verify trending rumors, unverified media leaks, and claims circulating on digital networks. Cross-referenced with active fact-checking databases.</p>
-                    </div>
-
-                    <div class="leaks-ledger-container" id="debunkRumorsFeed">
-                        <!-- Injected dynamically -->
-                    </div>
-                </section>
-
-                <!-- PAGE 4: DOMAIN TRUST REGISTRY -->
-                <section class="page-view" id="pageDomain">
-                    <div class="page-header-simple">
-                        <h1>DOMAIN TRUST REGISTRY & COMPASS</h1>
-                        <p>Search global news websites, publishers, and blogs to lookup their editorial factual score, political bias profile, and logged conspiracies.</p>
-                    </div>
-
-                    <div class="domain-lookup-layout">
-                        <!-- Left Card: Search and suggests -->
-                        <div class="card domain-search-card">
-                            <div class="card-header">
-                                <h3>DOMAIN SEARCH CONSOLE</h3>
-                            </div>
-                            <div class="card-body">
-                                <p class="section-desc">Type in any publisher domain name (e.g. <code>nytimes.com</code>, <code>reuters.com</code>, <code>theonion.com</code>, <code>infowars.com</code>) to view their trust ratings.</p>
-                                
-                                <div class="domain-search-wrapper">
-                                    <span class="domain-search-icon">🌐</span>
-                                    <input type="text" id="domainSearchInput" placeholder="e.g. reuters.com">
-                                    <button class="btn btn-primary" id="runDomainLookupBtn">LOOKUP</button>
-                                </div>
-
-                                <div class="suggest-pills-wrap">
-                                    <label class="field-label">QUICK VERIFICATION TARGETS</label>
-                                    <div class="suggest-pills">
-                                        <span class="suggest-pill">reuters.com</span>
-                                        <span class="suggest-pill">nytimes.com</span>
-                                        <span class="suggest-pill">foxnews.com</span>
-                                        <span class="suggest-pill">theonion.com</span>
-                                        <span class="suggest-pill">infowars.com</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right Card: Domain Audit Report -->
-                        <div class="card domain-report-card">
-                            <div class="card-header">
-                                <h3>DOMAIN TRUST AUDIT PROFILE</h3>
-                                <span class="tag tag-bias" id="domReputationLabel">ACTIVE REGISTRY</span>
-                            </div>
-                            <div class="card-body" id="domainReportBody">
-                                <div class="domain-empty-state" id="domainEmptyState">
-                                    <div class="globe-pulse">🌐</div>
-                                    <h4>Awaiting Lookup Query</h4>
-                                    <p>Search a domain name on the left or select a quick target to load their editorial factual score and bias profile.</p>
-                                </div>
-                                
-                                <div class="domain-results-state" id="domainResultsState" style="display: none;">
-                                    <div class="domain-title-bar">
-                                        <h2 id="domName">The New York Times</h2>
-                                        <span class="badge" id="domDomain">nytimes.com</span>
-                                    </div>
-
-                                    <div class="domain-stats-row">
-                                        <div class="dom-stat-card">
-                                            <span>Factual Reporting</span>
-                                            <strong id="domFactual">HIGH</strong>
-                                        </div>
-                                        <div class="dom-stat-card">
-                                            <span>Bias Index Leaning</span>
-                                            <strong id="domBias">LEFT-CENTER</strong>
-                                        </div>
-                                    </div>
-
-                                    <div class="domain-description-section">
-                                        <h5>EDITORIAL BRIEF</h5>
-                                        <p id="domDescription">Description content...</p>
-                                    </div>
-
-                                    <div class="domain-description-section error-style" id="conspiraciesContainer">
-                                        <h5>FLAGGED HOAXES / CONSPIRACIES LOGGED</h5>
-                                        <p id="domConspiracies" style="color: var(--color-danger); font-weight: 500;">No logged hoaxes found.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 5: FORENSIC VAULT (History & Bookmarks) -->
-                <section class="page-view" id="pageVault">
-                    <div class="page-header-simple">
-                        <h1>FORENSIC VAULT</h1>
-                        <p>Access your past media audit history and bookmarked credibility reports stored securely in the PostgreSQL database.</p>
-                    </div>
-                    
-                    <div class="vault-layout">
-                        <!-- Left half: Scan History -->
-                        <div class="vault-column">
-                            <div class="card vault-card">
-                                <div class="card-header">
-                                    <h3>AUDIT HISTORY LEDGER</h3>
-                                    <span class="vault-badge" id="historyCount">0 Scans</span>
-                                </div>
-                                <div class="card-body">
-                                    <div class="vault-table-wrapper">
-                                        <table class="vault-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Type</th>
-                                                    <th>Headline / Statement</th>
-                                                    <th>Score</th>
-                                                    <th>Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="vaultHistoryTableBody">
-                                                <!-- Injected dynamically -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="vault-empty-state" id="historyEmptyState">
-                                        <p>No audit history recorded yet. Scan text or URLs to log diagnostics.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right half: Bookmarks -->
-                        <div class="vault-column">
-                            <div class="card vault-card">
-                                <div class="card-header">
-                                    <h3>BOOKMARKED RESEARCH VAULT</h3>
-                                    <span class="vault-badge" id="bookmarkCount">0 Bookmarks</span>
-                                </div>
-                                <div class="card-body">
-                                    <div class="vault-grid" id="vaultBookmarksGrid">
-                                        <!-- Injected dynamically -->
-                                    </div>
-                                    <div class="vault-empty-state" id="bookmarksEmptyState">
-                                        <p>No bookmarked reports yet. Click "Bookmark Report" on any audit result to save.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-            </main>
-
-            <!-- App Bottom Footer -->
-            <footer class="app-footer">
-                <div class="footer-container">
-                    <p>&copy; 2026 Veritas Forensics Suite. Built with Scikit-Learn Local TF-IDF Classifier Pipeline.</p>
-                    <div class="footer-links">
-                        <a href="#privacy">Encryption Security</a>
-                        <a href="#terms">Classifier Weight Model</a>
-                    </div>
-                </div>
-            </footer>
         </div>
-    </div>
+    </header>
+
+    <!-- Ticker Log Banner -->
+    <section class="ticker-banner">
+        <div class="ticker-label">LIVE FLOW:</div>
+        <div class="ticker-stream-wrap">
+            <div class="ticker-stream" id="scanTicker">
+                SYS: STANDING BY // DATABASE SECURED // TF-IDF LOCAL ML MODELS ACTIVE // STANDBY FOR PAYLOAD...
+            </div>
+        </div>
+    </section>
 
     <!-- Auth Modal -->
     <div class="modal-overlay" id="authModal">
@@ -692,6 +115,472 @@
         </div>
     </div>
 
+    <!-- MAIN VIEWPORT -->
+    <main class="dashboard-viewport">
+        
+        <!-- PAGE 1: AUDIT SUITE (Scanner, Reports, Chat) -->
+        <section class="page-view active" id="pageRadar">
+            <!-- Hero Header -->
+            <div class="hero-header-card">
+                <h1>DECYPHER MEDIA WITH VERITAS RADAR</h1>
+                <p>Verify headlines using our local TF-IDF machine learning pipeline. Perform visual EXIF integrity scans, deepfake video reviews, or consult our Verification Chatbot.</p>
+            </div>
+
+            <div class="radar-layout">
+                <!-- Column 1: Scanner inputs & Chatbot helper -->
+                <div class="radar-col-left">
+                    <!-- Scanner Card -->
+                    <div class="card scanner-card">
+                        <div class="card-header">
+                            <h3>FORENSIC CORE INPUT</h3>
+                            <div class="scan-type-tabs">
+                                <button class="scan-tab active" data-tab="text">Text / Headline</button>
+                                <button class="scan-tab" data-tab="url">News URL</button>
+                                <button class="scan-tab" data-tab="image">Photo Scan</button>
+                                <button class="scan-tab" data-tab="video">Video Scan</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Text Input -->
+                            <div class="scan-input-group active" id="inputGroupText">
+                                <label class="field-label">INPUT STATEMENT OR TEXT</label>
+                                <textarea id="textInput" placeholder="Paste the claim, paragraph, or news story body to run our local machine learning classifier..."></textarea>
+                            </div>
+
+                            <!-- URL Input -->
+                            <div class="scan-input-group" id="inputGroupUrl">
+                                <label class="field-label">ARTICLE URL</label>
+                                <div class="url-input-box">
+                                    <span class="url-badge">HTTPS://</span>
+                                    <input type="text" id="urlInput" placeholder="example-news-site.com/story-path">
+                                </div>
+                                <span class="field-desc">We will crawl, strip DOM scripting tags, and analyze the article.</span>
+                            </div>
+
+                            <!-- Image Input -->
+                            <div class="scan-input-group" id="inputGroupImage">
+                                <label class="field-label">UPLOAD SUSPICIOUS PHOTO (supports Ctrl+V clipboard paste)</label>
+                                <div class="file-drop-container" id="dropZone">
+                                    <div class="drop-illustration">
+                                        <svg viewBox="0 0 24 24" width="32" height="32">
+                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="var(--color-primary)"/>
+                                        </svg>
+                                    </div>
+                                    <h4>Drag photo here, browse, or paste with Ctrl+V</h4>
+                                    <p>JPG, PNG, WEBP files up to 4MB.</p>
+                                    <input type="file" id="imageInput" accept="image/*" class="hidden-file-input">
+                                </div>
+                                <div class="file-loaded-banner" id="filePreviewWrap" style="display: none;">
+                                    <div class="file-details">
+                                        <span class="file-icon">🖼️</span>
+                                        <span class="file-name" id="selectedFileName">screenshot.png</span>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm" id="clearFileBtn">REMOVE</button>
+                                </div>
+                            </div>
+
+                            <!-- Video Input -->
+                            <div class="scan-input-group" id="inputGroupVideo">
+                                <label class="field-label">UPLOAD VIDEO STREAM FOR DEEPFAKE SCAN</label>
+                                <div class="file-drop-container" id="dropZoneVideo">
+                                    <div class="drop-illustration">
+                                        <svg viewBox="0 0 24 24" width="32" height="32">
+                                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" fill="var(--color-primary)"/>
+                                        </svg>
+                                    </div>
+                                    <h4>Drag video here or click to browse</h4>
+                                    <p>MP4, AVI, MOV, MKV files up to 10MB.</p>
+                                    <input type="file" id="videoInput" accept="video/*" class="hidden-file-input">
+                                </div>
+                                <div class="file-loaded-banner" id="videoPreviewWrap" style="display: none;">
+                                    <div class="file-details">
+                                        <span class="file-icon">📹</span>
+                                        <span class="file-name" id="selectedVideoName">deepfake_leak.mp4</span>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm" id="clearVideoBtn">REMOVE</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-block btn-lg btn-glow" id="runAuditBtn">
+                                <span class="btn-text">RUN MACHINE LEARNING AUDIT</span>
+                                <span class="loader-spinner" style="display: none;"></span>
+                            </button>
+                        </div>
+
+                        <!-- Logs display -->
+                        <div class="term-console">
+                            <div class="term-header">
+                                <div class="term-dots"><span></span><span></span><span></span></div>
+                                <span>PIPELINE TELEMETRY</span>
+                            </div>
+                            <div class="term-body" id="terminalLog">
+                                [SYS] Local TF-IDF classifier loaded.<br>
+                                [SYS] Standing by for input.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Latest News In Short Card -->
+                    <div class="card latest-news-short-card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h3>LATEST NEWS IN SHORT</h3>
+                            <span class="badge" style="background-color: var(--color-secondary); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700;">LIVE FEED</span>
+                        </div>
+                        <div class="card-body" id="latestNewsShortFeed" style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Dynamically loaded short news items -->
+                            <div style="font-size: 13px; color: var(--text-secondary); text-align: center; font-style: italic;">Connecting to News Registry...</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Column 2: Audit Results report panel -->
+                <div class="radar-col-right card card-report-panel" id="reportPanel">
+                    <!-- Blank state -->
+                    <div class="report-empty" id="reportBlankState">
+                        <div class="empty-graphic">
+                            <div class="radar-pulse"></div>
+                        </div>
+                        <h3>Diagnostics Panel Standby</h3>
+                        <p>No active payload audited yet. Submit text, images, or videos on the left to review local machine learning scores and logical fallacies.</p>
+                    </div>
+
+                    <!-- Populate Report -->
+                    <div class="report-content" id="reportResults" style="display: none;">
+                        <div class="report-summary">
+                            <div class="gauge-chart-wrap">
+                                <svg class="circle-svg" viewBox="0 0 100 100">
+                                    <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                                    <circle class="circle-fill" id="gaugeFill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="132"></circle>
+                                </svg>
+                                <div class="circle-readout">
+                                    <h2 id="gaugeScoreVal">85%</h2>
+                                    <span>TRUTH INDEX</span>
+                                </div>
+                            </div>
+
+                            <div class="summary-meta">
+                                <h3 class="target-title" id="reportHeadline">Audited Target Headline</h3>
+                                <div class="verdict-banner" id="verdictBanner">
+                                    <span class="verdict-label" id="verdictLabel">Highly Authentic</span>
+                                    <p class="verdict-desc" id="verdictDesc">Description details...</p>
+                                </div>
+                                <div class="badge-set" style="margin-top: 10px;">
+                                    <span class="tag tag-bias" id="reportBiasBadge">Center Leaning</span>
+                                    <span class="tag tag-type" id="reportTypeBadge">Text Audit</span>
+                                    <span class="tag tag-subject" id="reportSubjectBadge" style="display: none;">Human Subject</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Authenticity Seal Stamp -->
+                            <div class="verdict-stamp-wrap">
+                                <div class="verdict-stamp" id="verdictStamp">VERIFIED TRUE</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Metrics Grid -->
+                        <div class="metrics-grid">
+                            <div class="metric-progress-card">
+                                <div class="metric-info">
+                                    <span>Stylistic Sensationalism</span>
+                                    <strong id="clickbaitVal">20%</strong>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-bar" id="clickbaitBar" style="width: 20%;"></div>
+                                </div>
+                            </div>
+                            <div class="metric-progress-card">
+                                <div class="metric-info">
+                                    <span>Capitalization & Tone Warnings</span>
+                                    <strong id="intensityVal">35%</strong>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-bar" id="intensityBar" style="width: 35%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Text Fallacy Inspector -->
+                        <div class="inspector-box" id="inspectorTextSection">
+                            <div class="box-header">
+                                <h4>LOGICAL FALLACY CHECKER</h4>
+                                <span>Click highlights for critique</span>
+                            </div>
+                            <div class="reading-canvas" id="fallacyTextCanvas">
+                                <!-- Text content with highlights -->
+                            </div>
+                            
+                            <!-- Fallacy detail card -->
+                            <div class="fallacy-detail-card" id="fallacyDetailsPopup" style="display: none;">
+                                <div class="fallacy-title-row">
+                                    <span class="warning-triangle">⚠️</span>
+                                    <h5 id="popupFallacyName">FALLACY DETECTED</h5>
+                                </div>
+                                <p class="fallacy-explanation" id="popupFallacyExplanation">Explanation text</p>
+                                <div class="correction-block">
+                                    <span class="correct-badge">OBJECTIVE REWRITE</span>
+                                    <p id="popupFallacyCorrection">Correction text</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Forensic Canvas -->
+                        <div class="inspector-box" id="inspectorImageSection" style="display: none;">
+                            <div class="box-header">
+                                <h4>VISUAL ANOMALY GRID</h4>
+                                <span>Morphed boundaries or AI pixel textures highlighted</span>
+                            </div>
+                            <div class="canvas-image-wrapper">
+                                <img id="forensicImagePreview" src="" alt="Forensic View">
+                                <canvas id="forensicCanvasOverlay"></canvas>
+                            </div>
+
+                            <div class="exif-data-card">
+                                <h5>EXIF STRUCTURAL METADATA</h5>
+                                <div class="exif-rows" id="metadataRows">
+                                    <!-- Rows -->
+                                </div>
+                                <div class="exif-summary-note" id="metadataNote"></div>
+                            </div>
+                        </div>
+
+                        <!-- Video Forensics Results Display -->
+                        <div class="inspector-box" id="inspectorVideoSection" style="display: none;">
+                            <div class="box-header">
+                                <h4>VIDEO DEEPFAKE ANALYSIS</h4>
+                                <span>Frame jump or audio sync alerts flagged</span>
+                            </div>
+                            <div class="video-preview-player-wrap">
+                                <video id="forensicVideoPlayer" controls style="width: 100%; border-radius: 8px; margin-top: 12px; max-height: 240px; background: #000; border: 1px solid var(--color-border);"></video>
+                            </div>
+                            <div class="video-meta-grid" style="margin-top: 16px;">
+                                <div class="video-meta-card">
+                                    <span>Analyzed File:</span>
+                                    <strong id="vidName">clip.mp4</strong>
+                                </div>
+                                <div class="video-meta-card">
+                                    <span>Guessed Codec:</span>
+                                    <strong id="vidCodec">H.264 AVC</strong>
+                                </div>
+                            </div>
+                            <div class="video-anomalies-list">
+                                <h5>DETECTED GLITCH SIGNATURES</h5>
+                                <ul class="anomaly-ul" id="videoAnomaliesUl">
+                                    <!-- Injected -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Reasoning / ML verdict -->
+                        <div class="verdict-block">
+                            <h5>MACHINE LEARNING AUDIT DECISION</h5>
+                            <p id="reportReasoningText">Conclusion details...</p>
+                        </div>
+
+                        <!-- Related Chronicles Section -->
+                        <div class="related-news-section" id="relatedNewsSection">
+                            <h4 class="related-news-header">RELATED VERIFIED CHRONICLES</h4>
+                            <div class="related-grid" id="relatedNewsGrid">
+                                <!-- Cards injected -->
+                            </div>
+                        </div>
+
+                        <div class="results-actions" style="margin-top: 24px;">
+                            <button class="btn btn-secondary" id="saveBookmarkBtn">Bookmark Report</button>
+                            <button class="btn btn-secondary" id="shareReportBtn">Copy Share URL</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: VERIFIED NEWS ROOM -->
+        <section class="page-view" id="pageNews">
+            <div class="page-header-simple">
+                <h1>VERIFIED WORLD CHRONICLES</h1>
+                <p>A collection of current affairs verified by our local Scikit-Learn TF-IDF classifier. Click the direct source links to view original publications.</p>
+            </div>
+            
+            <div class="news-filters-row">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search verified database..." id="newsSearchInput">
+                </div>
+                <div class="filter-badges">
+                    <button class="filter-btn active">All Topics</button>
+                    <button class="filter-btn">Politics</button>
+                    <button class="filter-btn">Science</button>
+                    <button class="filter-btn">Economics</button>
+                    <button class="filter-btn">Tech</button>
+                </div>
+            </div>
+
+            <div class="news-grid" id="verifiedNewsFeed">
+                <!-- Injected dynamically -->
+            </div>
+        </section>
+
+        <!-- PAGE 3: LEAKS & RUMORS LEDGER -->
+        <section class="page-view" id="pageLeaks">
+            <div class="page-header-simple">
+                <h1>VIRAL RUMORS & DEBUNK REGISTRY</h1>
+                <p>Verify trending rumors, unverified media leaks, and claims circulating on digital networks. Cross-referenced with active fact-checking databases.</p>
+            </div>
+
+            <div class="leaks-ledger-container" id="debunkRumorsFeed">
+                <!-- Injected dynamically -->
+            </div>
+        </section>
+
+        <!-- PAGE 4: DOMAIN TRUST REGISTRY (Replaced Truth Academy) -->
+        <section class="page-view" id="pageDomain">
+            <div class="page-header-simple">
+                <h1>DOMAIN TRUST REGISTRY & COMPASS</h1>
+                <p>Search global news websites, publishers, and blogs to lookup their editorial factual score, political bias profile, and logged conspiracies.</p>
+            </div>
+
+            <div class="domain-lookup-layout">
+                <!-- Left Card: Search and suggests -->
+                <div class="card domain-search-card">
+                    <div class="card-header">
+                        <h3>DOMAIN SEARCH CONSOLE</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="section-desc">Type in any publisher domain name (e.g. <code>nytimes.com</code>, <code>reuters.com</code>, <code>theonion.com</code>, <code>infowars.com</code>) to view their trust ratings.</p>
+                        
+                        <div class="domain-search-wrapper">
+                            <span class="domain-search-icon">🌐</span>
+                            <input type="text" id="domainSearchInput" placeholder="e.g. reuters.com">
+                            <button class="btn btn-primary" id="runDomainLookupBtn">LOOKUP</button>
+                        </div>
+
+                        <div class="suggest-pills-wrap">
+                            <label class="field-label">QUICK VERIFICATION TARGETS</label>
+                            <div class="suggest-pills">
+                                <span class="suggest-pill">reuters.com</span>
+                                <span class="suggest-pill">nytimes.com</span>
+                                <span class="suggest-pill">foxnews.com</span>
+                                <span class="suggest-pill">theonion.com</span>
+                                <span class="suggest-pill">infowars.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Card: Domain Audit Report -->
+                <div class="card domain-report-card">
+                    <div class="card-header">
+                        <h3>DOMAIN TRUST AUDIT PROFILE</h3>
+                        <span class="tag tag-bias" id="domReputationLabel">ACTIVE REGISTRY</span>
+                    </div>
+                    <div class="card-body" id="domainReportBody">
+                        <div class="domain-empty-state" id="domainEmptyState">
+                            <div class="globe-pulse">🌐</div>
+                            <h4>Awaiting Lookup Query</h4>
+                            <p>Search a domain name on the left or select a quick target to load their editorial factual score and bias profile.</p>
+                        </div>
+                        
+                        <div class="domain-results-state" id="domainResultsState" style="display: none;">
+                            <div class="domain-title-bar">
+                                <h2 id="domName">The New York Times</h2>
+                                <span class="badge" id="domDomain">nytimes.com</span>
+                            </div>
+
+                            <div class="domain-stats-row">
+                                <div class="dom-stat-card">
+                                    <span>Factual Reporting</span>
+                                    <strong id="domFactual">HIGH</strong>
+                                </div>
+                                <div class="dom-stat-card">
+                                    <span>Bias Index Leaning</span>
+                                    <strong id="domBias">LEFT-CENTER</strong>
+                                </div>
+                            </div>
+
+                            <div class="domain-description-section">
+                                <h5>EDITORIAL BRIEF</h5>
+                                <p id="domDescription">Description content...</p>
+                            </div>
+
+                            <div class="domain-description-section error-style" id="conspiraciesContainer">
+                                <h5>FLAGGED HOAXES / CONSPIRACIES LOGGED</h5>
+                                <p id="domConspiracies" style="color: var(--color-danger); font-weight: 500;">No logged hoaxes found.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- PAGE 5: FORENSIC VAULT (History & Bookmarks) -->
+        <section class="page-view" id="pageVault">
+            <div class="page-header-simple">
+                <h1>FORENSIC VAULT</h1>
+                <p>Access your past media audit history and bookmarked credibility reports stored securely in the PostgreSQL database.</p>
+            </div>
+            
+            <div class="vault-layout">
+                <!-- Left half: Scan History -->
+                <div class="vault-column">
+                    <div class="card vault-card">
+                        <div class="card-header">
+                            <h3>AUDIT HISTORY LEDGER</h3>
+                            <span class="vault-badge" id="historyCount">0 Scans</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="vault-table-wrapper">
+                                <table class="vault-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Headline / Statement</th>
+                                            <th>Score</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vaultHistoryTableBody">
+                                        <!-- Injected dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="vault-empty-state" id="historyEmptyState">
+                                <p>No audit history recorded yet. Scan text or URLs to log diagnostics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right half: Bookmarks -->
+                <div class="vault-column">
+                    <div class="card vault-card">
+                        <div class="card-header">
+                            <h3>BOOKMARKED RESEARCH VAULT</h3>
+                            <span class="vault-badge" id="bookmarkCount">0 Bookmarks</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="vault-grid" id="vaultBookmarksGrid">
+                                <!-- Injected dynamically -->
+                            </div>
+                            <div class="vault-empty-state" id="bookmarksEmptyState">
+                                <p>No bookmarked reports yet. Click "Bookmark Report" on any audit result to save.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- App Bottom Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 Veritas Forensics Suite. Built with Scikit-Learn Local TF-IDF Classifier Pipeline.</p>
+            <div class="footer-links">
+                <a href="#privacy">Encryption Security</a>
+                <a href="#terms">Classifier Weight Model</a>
+            </div>
+        </div>
+    </footer>
+
     <!-- Floating Chatbot Widget -->
     <div class="chatbot-widget" id="chatbotWidget">
         <button class="chatbot-trigger" id="chatbotTrigger" aria-label="Open Veritas Assistant">
@@ -702,7 +591,7 @@
         <div class="chatbot-panel" id="chatbotPanel">
             <div class="chatbot-header">
                 <div class="chatbot-title-wrap">
-                    <span class="status-dot pulsing" style="background-color: var(--color-primary); box-shadow: 0 0 8px var(--color-primary);"></span>
+                    <span class="status-dot pulsing" style="background-color: var(--color-secondary); box-shadow: 0 0 8px var(--color-secondary);"></span>
                     <div>
                         <h4>VERITAS AGENT AI</h4>
                         <span>Guidance Console</span>
@@ -727,16 +616,6 @@
                 <input type="text" id="chatbotInput" placeholder="Ask a forensics question..." autocomplete="off">
                 <button type="submit" class="chatbot-send-btn" id="chatbotSendBtn">SEND</button>
             </form>
-        </div>
-    </div>
-
-    <!-- Scrolling Cylinder Ticker -->
-    <div class="scrolling-cylinder">
-        <div class="cylinder-shine"></div>
-        <div class="cylinder-ticker-wrap">
-            <div class="cylinder-ticker-track" id="cylinderTicker">
-                SYS: ACTIVE // CORRELATION MATRIX COMPILING // EXIF FORENSICS ONLINE // LOCAL ML CLASSIFIERS READY // TRUTH FACTOR SCORE VERIFIED // SECURE DATA VAULT CONNECTED // AGENT TELEMETRY LIVE
-            </div>
         </div>
     </div>
 
