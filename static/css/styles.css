@@ -2813,3 +2813,69 @@ textarea:focus, input[type="text"]:focus, input[type="email"]:focus, input[type=
     color: #e2e8f0 !important;
 }
 
+/* Explicit Contrast Rules for bright mode elements */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-primary) !important;
+    font-weight: 700 !important;
+}
+
+p, span, li, a, td, th {
+    color: var(--text-primary);
+}
+
+.text-secondary, .section-desc, .field-desc, .canvas-caption {
+    color: var(--text-secondary) !important;
+}
+
+/* Modal and dialog contrast fix */
+.modal-card {
+    background: #ffffff !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.modal-header h2 {
+    color: var(--color-primary) !important;
+}
+
+.auth-tab {
+    color: var(--text-secondary) !important;
+    background: transparent !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+.auth-tab.active {
+    color: var(--color-primary) !important;
+    border-bottom: 2px solid var(--color-secondary) !important;
+    font-weight: 700 !important;
+}
+
+/* Logical fallacy highlight background contrast */
+.fallacy-highlight {
+    background-color: rgba(199, 128, 26, 0.15) !important;
+    border-bottom: 2px dashed var(--color-warning) !important;
+    color: var(--text-primary) !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.fallacy-highlight:hover {
+    background-color: rgba(199, 128, 26, 0.25) !important;
+}
+
+.fallacy-highlight.selected {
+    background-color: rgba(199, 128, 26, 0.35) !important;
+}
+
+/* News cards blending match background */
+.card, .feed-item, .vault-bookmark-card, .brutalist-method-card, .metric-card-brutalist {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(22, 42, 69, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(22, 42, 69, 0.03) !important;
+}
+
+.card:hover, .feed-item:hover, .vault-bookmark-card:hover {
+    border-color: rgba(22, 42, 69, 0.2) !important;
+    box-shadow: 0 8px 24px rgba(22, 42, 69, 0.06) !important;
+}
+
