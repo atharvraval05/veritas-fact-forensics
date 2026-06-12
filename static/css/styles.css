@@ -1,28 +1,28 @@
 /* Veritas Premium B2B Light & Colorful Stylesheet */
 
 :root {
-    /* Color System - Futuristic Cyber Dark Theme */
-    --color-bg: #090a0f;            /* Deep Space Black */
-    --color-bg-alt: #11131e;        /* Darker Navy Slate */
-    --color-surface: rgba(17, 19, 30, 0.75); /* Glassmorphic Dark Card */
-    --color-surface-hover: rgba(25, 27, 43, 0.85);
-    --color-border: rgba(99, 102, 241, 0.15); /* Glowing Indigo Border */
-    --color-border-hover: rgba(99, 102, 241, 0.35);
+    /* Color System - Futuristic Cosmic Indigo & Neon Theme */
+    --color-bg: #0b0c1b;            /* Cosmic Indigo Dark */
+    --color-bg-alt: #13152e;        /* Deep Luminous Navy */
+    --color-surface: rgba(22, 25, 54, 0.65); /* Glassmorphic Luminous Card */
+    --color-surface-hover: rgba(30, 34, 71, 0.75);
+    --color-border: rgba(99, 102, 241, 0.25); /* Glowing Indigo Border */
+    --color-border-hover: rgba(0, 242, 254, 0.45); /* Bright Cyan Hover */
     
     /* Vibrant Gradients & Accent Colors */
-    --color-primary: #6366f1;       /* Radiant Indigo */
-    --color-secondary: #06b6d4;     /* Cyber Neon Cyan */
-    --color-accent-pink: #ec4899;   /* Hot Magenta */
-    --color-accent-purple: #a855f7; /* Royal Violet */
+    --color-primary: #a855f7;       /* Bright Neon Purple */
+    --color-secondary: #00f2fe;     /* Bright Cyber Cyan */
+    --color-accent-pink: #ff007f;   /* Radiant Hot Pink */
+    --color-accent-purple: #c084fc; /* Light Luminous Violet */
     
-    --color-success: #10b981;       /* Emerald Green */
-    --color-danger: #f43f5e;        /* Rose Red */
-    --color-warning: #f59e0b;       /* Amber Gold */
+    --color-success: #00ffaa;       /* Electric Mint Green */
+    --color-danger: #ff0055;        /* Radiant Rose Red */
+    --color-warning: #ffb700;       /* Luminous Gold */
     
     /* Text Levels - Crisp and readable contrast */
-    --text-primary: #f8fafc;        /* High-Contrast White */
-    --text-secondary: #94a3b8;      /* Cool Muted Blue Slate */
-    --text-muted: #64748b;          /* Darker Gray Slate */
+    --text-primary: #ffffff;        /* Luminous White */
+    --text-secondary: #cbd5e1;      /* Bright Blue Gray */
+    --text-muted: #8b9bb4;          /* Soft Gray Slate */
     
     /* Typography */
     --font-heading: 'Plus Jakarta Sans', sans-serif;
@@ -32,9 +32,9 @@
     /* Animations & Shadows */
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --transition-speed: 0.25s;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    --shadow-lg: 0 20px 50px -10px rgba(99, 102, 241, 0.15), 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 20px 50px -10px rgba(99, 102, 241, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
 /* Base Reset */
@@ -72,8 +72,8 @@ body {
     position: absolute;
     border-radius: 50%;
     filter: blur(140px);
-    opacity: 0.12;
-    mix-blend-mode: multiply;
+    opacity: 0.28;
+    mix-blend-mode: screen;
 }
 
 .orb-1 {
