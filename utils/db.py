@@ -415,3 +415,78 @@ def lookup_domain_reputation(domain: str) -> dict:
         "description": f"The domain '{domain}' is not registered in our core database list. Please scan its articles manually to audit credibility.",
         "known_conspiracies": "No logged conspiracies or hoaxes found in registry."
     }
+
+def get_user_history(user_id: str) -> list:
+    if not is_mock_mode:
+        try:
+            res = supabase_client.table("scans").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
+            if res.data:
+                return res.data
+        except Exception as e:
+            print(f"[DB Error] Fetch scans failed: {e}")
+            
+    # Mock fallback
+    return [s for s in mock_db.scans if s.get("user_id") == user_id]
+
+def get_user_bookmarks(user_id: str) -> list:
+    if not is_mock_mode:
+        try:
+            res = supabase_client.table("bookmarks").select("*, scans(*)").eq("user_id", user_id).order("created_at", desc=True).execute()
+            if res.data:
+                output = []
+                for b in res.data:
+                    scan_data = b.get("scans")
+                    if scan_data:
+                        scan_data["bookmark_id"] = b["id"]
+                        output.append(scan_data)
+                return output
+        except Exception as e:
+            print(f"[DB Error] Fetch bookmarks failed: {e}")
+            
+    # Mock fallback
+    output = []
+    for b in mock_db.bookmarks:
+        if b.get("user_id") == user_id:
+            scan = next((s for s in mock_db.scans if s.get("id") == b.get("scan_id")), None)
+            if scan:
+                output.append(scan)
+    return output
+
+def add_bookmark(user_id: str, scan_id: str) -> dict:
+    if not is_mock_mode:
+        try:
+            payload = {
+                "user_id": user_id,
+                "scan_id": scan_id
+            }
+            res = supabase_client.table("bookmarks").insert(payload).execute()
+            if res.data:
+                return {"success": True, "data": res.data[0]}
+        except Exception as e:
+            print(f"[DB Error] Add bookmark failed: {e}")
+            return {"success": False, "error": str(e)}
+            
+    # Mock fallback
+    exists = any(b for b in mock_db.bookmarks if b.get("user_id") == user_id and b.get("scan_id") == scan_id)
+    if not exists:
+        mock_db.bookmarks.append({
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "scan_id": scan_id,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+    return {"success": True}
+
+def delete_bookmark(user_id: str, scan_id: str) -> dict:
+    if not is_mock_mode:
+        try:
+            res = supabase_client.table("bookmarks").delete().eq("user_id", user_id).eq("scan_id", scan_id).execute()
+            return {"success": True}
+        except Exception as e:
+            print(f"[DB Error] Delete bookmark failed: {e}")
+            return {"success": False, "error": str(e)}
+            
+    # Mock fallback
+    mock_db.bookmarks = [b for b in mock_db.bookmarks if not (b.get("user_id") == user_id and b.get("scan_id") == scan_id)]
+    return {"success": True}
+

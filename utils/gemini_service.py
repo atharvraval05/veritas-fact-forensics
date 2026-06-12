@@ -72,6 +72,114 @@ def get_mock_fallacy_highlights(text: str) -> list:
     return found
 
 
+def find_related_local_news(text: str) -> list:
+    """
+    Finds up to 3 articles in the local global_news_feed that are related to the input text.
+    Uses English stop-words filtering and a robust scoring/ranking algorithm.
+    Falls back to category-based matching and finally to top verified articles.
+    """
+    text_lower = text.lower()
+    
+    # Standard English stop words
+    STOP_WORDS = {
+        "the", "a", "an", "and", "or", "but", "if", "then", "else", "when", "where",
+        "why", "how", "what", "who", "whom", "this", "that", "these", "those",
+        "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
+        "having", "do", "does", "did", "doing", "for", "with", "about", "against",
+        "between", "into", "through", "during", "before", "after", "above", "below",
+        "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again",
+        "further", "then", "once", "here", "there", "all", "any", "both", "each",
+        "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only",
+        "own", "same", "so", "than", "too", "very", "can", "will", "just", "should",
+        "now", "says", "said", "also", "would", "could", "should", "about", "your",
+        "they", "them", "their", "there", "some", "many", "most"
+    }
+    
+    # Category semantic keywords mapping for fallback classification
+    CATEGORY_KEYWORDS = {
+        "Science": {"science", "mars", "lander", "space", "moon", "lunar", "orbit", "crater", "ice", "water", "physics", "superconductor", "apatite", "crispr", "gene", "sickle", "cell", "dna", "rna", "fda", "medical", "treatment", "therapy"},
+        "Economics": {"economics", "market", "stock", "interest", "rate", "fed", "federal", "reserve", "cut", "inflation", "stabilize", "euro", "bank", "ecb", "semiconductor", "fab", "supply", "capacity", "energy", "renewable", "electricity", "grid", "solar", "wind", "power"},
+        "Tech": {"tech", "quantum", "qubit", "chip", "processor", "cryptographic", "deepmind", "alphafold", "biomolecular", "drug", "discovery", "neural", "weather", "forecast", "encryption", "protocol", "fiber", "link", "network", "ai", "artificial", "intelligence"},
+        "Politics": {"politics", "un", "climate", "methane", "summit", "accord", "emission", "conservation", "amazon", "rainforest", "treaty", "health", "who", "world", "organization", "international", "seas", "ocean", "marine", "sanctuaries", "fishing", "mining"}
+    }
+
+    # Simple word list extraction
+    words = [w for w in re.findall(r'\b\w+\b', text_lower) if len(w) > 3 and w not in STOP_WORDS]
+    
+    matches = []
+    from utils.db import get_global_news
+    all_news = get_global_news()
+    
+    for item in all_news:
+        score = 0
+        title_lower = item["title"].lower()
+        summary_lower = item["summary"].lower()
+        category_lower = item["category"].lower()
+        
+        for w in words:
+            # Word boundary check for exact word matching
+            exact_title_match = re.search(rf"\b{re.escape(w)}\b", title_lower)
+            exact_summary_match = re.search(rf"\b{re.escape(w)}\b", summary_lower)
+            
+            if exact_title_match:
+                score += 10
+            elif w in title_lower:
+                score += 5
+                
+            if exact_summary_match:
+                score += 4
+            elif w in summary_lower:
+                score += 2
+                
+            if w == category_lower:
+                score += 5
+                
+        if score > 0:
+            matches.append((score, item))
+            
+    # Sort matches by score descending, then by credibility_score descending
+    matches.sort(key=lambda x: (x[0], x[1]["credibility_score"]), reverse=True)
+    
+    # If no keyword matches, fallback to category heuristic
+    if not matches:
+        category_scores = {cat: 0 for cat in CATEGORY_KEYWORDS}
+        for cat, keywords in CATEGORY_KEYWORDS.items():
+            for w in words:
+                if w in keywords:
+                    category_scores[cat] += 1
+        
+        best_cat = max(category_scores, key=category_scores.get)
+        if category_scores[best_cat] > 0:
+            # Gather all articles from the best category
+            cat_articles = [item for item in all_news if item["category"].lower() == best_cat.lower()]
+            # Sort by credibility score descending
+            cat_articles.sort(key=lambda x: x["credibility_score"], reverse=True)
+            for item in cat_articles:
+                matches.append((1, item))
+                
+    # If still no matches or not enough, pad with the highest credibility news items
+    if len(matches) < 3:
+        seen_ids = {item["id"] for _, item in matches}
+        sorted_all_news = sorted(all_news, key=lambda x: x["credibility_score"], reverse=True)
+        for item in sorted_all_news:
+            if item["id"] not in seen_ids:
+                matches.append((0, item))
+                seen_ids.add(item["id"])
+            if len(matches) >= 3:
+                break
+
+    return [
+        {
+            "title": item["title"],
+            "source": item["source"],
+            "url": item["url"],
+            "credibility_score": item["credibility_score"]
+        }
+        for _, item in matches[:3]
+    ]
+
+
+
 def analyze_article_text(text: str, url: str = None) -> dict:
     """
     Real-Time Online Grounding Engine:
@@ -106,14 +214,7 @@ def analyze_article_text(text: str, url: str = None) -> dict:
             "status_class": "danger",
             "metrics": {"bias_score": 0, "clickbait_score": style_score, "sensationalism_score": style_score, "logical_fallacies": get_mock_fallacy_highlights(text)},
             "reasoning": "Live Google News verification cannot be completed because the GEMINI_API_KEY environment variable is not configured. Please add a valid Gemini API key to your .env file to enable live search grounding verification.",
-            "related_news": [
-                {
-                    "title": "Veritas Setup: Configure your GEMINI_API_KEY in your local environment",
-                    "source": "System Setup",
-                    "url": "https://ai.google.dev/",
-                    "credibility_score": 100
-                }
-            ]
+            "related_news": find_related_local_news(text)
         }
 
     try:
@@ -184,6 +285,38 @@ def analyze_article_text(text: str, url: str = None) -> dict:
         result["verdict_label"] = verdict["label"]
         result["verdict_desc"] = verdict["description"]
         result["status_class"] = verdict["status_class"]
+
+        # Blend related news: prioritize local news first, followed by Gemini search results
+        local_news = find_related_local_news(text)
+        gemini_news = result.get("related_news", [])
+        if not isinstance(gemini_news, list):
+            gemini_news = []
+            
+        blended = []
+        seen_urls = set()
+        seen_titles = set()
+        
+        # Add local news first
+        for item in local_news:
+            url_clean = item["url"].lower().strip()
+            title_clean = item["title"].lower().strip()
+            if url_clean not in seen_urls and title_clean not in seen_titles:
+                blended.append(item)
+                seen_urls.add(url_clean)
+                seen_titles.add(title_clean)
+                
+        # Add Gemini news next
+        for item in gemini_news:
+            if not isinstance(item, dict) or "url" not in item or "title" not in item:
+                continue
+            url_clean = item["url"].lower().strip()
+            title_clean = item["title"].lower().strip()
+            if url_clean not in seen_urls and title_clean not in seen_titles:
+                blended.append(item)
+                seen_urls.add(url_clean)
+                seen_titles.add(title_clean)
+                
+        result["related_news"] = blended[:3]
         return result
         
     except Exception as e:
@@ -196,7 +329,7 @@ def analyze_article_text(text: str, url: str = None) -> dict:
             "status_class": "warning",
             "metrics": {"bias_score": 50, "clickbait_score": style_score, "sensationalism_score": style_score, "logical_fallacies": []},
             "reasoning": f"Verification failed during live Google News checks: {str(e)}",
-            "related_news": []
+            "related_news": find_related_local_news(text)
         }
 
 

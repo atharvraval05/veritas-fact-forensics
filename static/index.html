@@ -38,6 +38,7 @@
                 <button class="nav-link" data-page="news">Verified News Room</button>
                 <button class="nav-link" data-page="leaks">Leaks & Rumors</button>
                 <button class="nav-link" data-page="domain">Domain Trust Registry</button>
+                <button class="nav-link" data-page="vault" id="navVaultBtn" style="display: none;">Forensic Vault</button>
             </nav>
 
             <div class="nav-actions">
@@ -216,6 +217,18 @@
                                 [SYS] Local TF-IDF classifier loaded.<br>
                                 [SYS] Standing by for input.
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Latest News In Short Card -->
+                    <div class="card latest-news-short-card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h3>LATEST NEWS IN SHORT</h3>
+                            <span class="badge" style="background-color: var(--color-secondary); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700;">LIVE FEED</span>
+                        </div>
+                        <div class="card-body" id="latestNewsShortFeed" style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Dynamically loaded short news items -->
+                            <div style="font-size: 13px; color: var(--text-secondary); text-align: center; font-style: italic;">Connecting to News Registry...</div>
                         </div>
                     </div>
 
@@ -497,6 +510,62 @@
                     </div>
                 </div>
             </div>
+        <!-- PAGE 5: FORENSIC VAULT (History & Bookmarks) -->
+        <section class="page-view" id="pageVault">
+            <div class="page-header-simple">
+                <h1>FORENSIC VAULT</h1>
+                <p>Access your past media audit history and bookmarked credibility reports stored securely in the PostgreSQL database.</p>
+            </div>
+            
+            <div class="vault-layout">
+                <!-- Left half: Scan History -->
+                <div class="vault-column">
+                    <div class="card vault-card">
+                        <div class="card-header">
+                            <h3>AUDIT HISTORY LEDGER</h3>
+                            <span class="vault-badge" id="historyCount">0 Scans</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="vault-table-wrapper">
+                                <table class="vault-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Headline / Statement</th>
+                                            <th>Score</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vaultHistoryTableBody">
+                                        <!-- Injected dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="vault-empty-state" id="historyEmptyState">
+                                <p>No audit history recorded yet. Scan text or URLs to log diagnostics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right half: Bookmarks -->
+                <div class="vault-column">
+                    <div class="card vault-card">
+                        <div class="card-header">
+                            <h3>BOOKMARKED RESEARCH VAULT</h3>
+                            <span class="vault-badge" id="bookmarkCount">0 Bookmarks</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="vault-grid" id="vaultBookmarksGrid">
+                                <!-- Injected dynamically -->
+                            </div>
+                            <div class="vault-empty-state" id="bookmarksEmptyState">
+                                <p>No bookmarked reports yet. Click "Bookmark Report" on any audit result to save.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -511,6 +580,44 @@
             </div>
         </div>
     </footer>
+
+    <!-- Floating Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <button class="chatbot-trigger" id="chatbotTrigger" aria-label="Open Veritas Assistant">
+            <span class="chat-icon">💬</span>
+            <span class="chat-badge">ASSISTANT</span>
+        </button>
+        
+        <div class="chatbot-panel" id="chatbotPanel">
+            <div class="chatbot-header">
+                <div class="chatbot-title-wrap">
+                    <span class="status-dot pulsing" style="background-color: var(--color-secondary); box-shadow: 0 0 8px var(--color-secondary);"></span>
+                    <div>
+                        <h4>VERITAS AGENT AI</h4>
+                        <span>Guidance Console</span>
+                    </div>
+                </div>
+                <button class="chatbot-close" id="chatbotCloseBtn">&times;</button>
+            </div>
+            
+            <div class="chatbot-body" id="chatbotBody">
+                <div class="chat-message assistant">
+                    <p>Welcome, Agent. Select a quick action below or type a query to begin verification guidance.</p>
+                </div>
+                <div class="chat-suggestions">
+                    <button class="chat-suggest-btn" data-q="How do I verify if an image is a deepfake?">🔍 How to spot deepfakes?</button>
+                    <button class="chat-suggest-btn" data-q="What is a logical fallacy and how do I spot one?">⚠️ Spotting logical fallacies</button>
+                    <button class="chat-suggest-btn" data-q="How does the Veritas credibility score work?">📊 Veritas scoring algorithm</button>
+                    <button class="chat-suggest-btn" data-q="How can I check a website's reputation?">🌐 Check domain trust registry</button>
+                </div>
+            </div>
+            
+            <form class="chatbot-input-area" id="chatbotForm">
+                <input type="text" id="chatbotInput" placeholder="Ask a forensics question..." autocomplete="off">
+                <button type="submit" class="chatbot-send-btn" id="chatbotSendBtn">SEND</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Frontend logic scripts -->
     <script src="/static/js/app.js"></script>

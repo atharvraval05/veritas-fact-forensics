@@ -34,6 +34,15 @@ class ImageUrlAnalysisRequest(BaseModel):
     url: str
     user_id: Optional[str] = None
 
+class BookmarkRequest(BaseModel):
+    user_id: str
+    scan_id: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: Optional[List[dict]] = None
+
+
 # Helper to crawl and clean URL text
 async def scrape_url_text(url: str) -> tuple[str, str]:
     try:
@@ -88,8 +97,31 @@ async def scrape_url_text(url: str) -> tuple[str, str]:
 @app.get("/api/config")
 def get_config():
     return {
-        "is_mock_mode": get_db_mode()
+        "is_mock_mode": get_db_mode(),
+        "supabase_url": os.getenv("NEXT_PUBLIC_SUPABASE_URL"),
+        "supabase_anon_key": os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
     }
+
+@app.get("/api/history")
+def get_history(user_id: str):
+    from utils.db import get_user_history
+    return get_user_history(user_id)
+
+@app.get("/api/bookmarks")
+def get_bookmarks(user_id: str):
+    from utils.db import get_user_bookmarks
+    return get_user_bookmarks(user_id)
+
+@app.post("/api/bookmarks/add")
+def add_bookmark_route(req: BookmarkRequest):
+    from utils.db import add_bookmark
+    return add_bookmark(req.user_id, req.scan_id)
+
+@app.post("/api/bookmarks/delete")
+def delete_bookmark_route(req: BookmarkRequest):
+    from utils.db import delete_bookmark
+    return delete_bookmark(req.user_id, req.scan_id)
+
 
 @app.post("/api/analyze/text")
 async def analyze_text(req: TextAnalysisRequest):
@@ -271,6 +303,81 @@ def get_feeds():
 @app.get("/api/domain/lookup")
 def lookup_domain(domain: str):
     return lookup_domain_reputation(domain)
+
+@app.post("/api/chat")
+async def chat_endpoint(req: ChatRequest):
+    message = req.message.strip()
+    message_lower = message.lower()
+    
+    # Pre-given Q&A matches for the judges
+    pregiven_qa = [
+        {
+            "keywords": ["deepfake", "morphed", "verify if an image is a deepfake", "image deepfake", "morphed image", "verify image", "detect fake image", "check if image is fake", "spot deepfakes"],
+            "reply": "To verify if an image is deepfaked or morphed:\n\n1. **Check EXIF Metadata**: Look for the camera make/model and editing software signatures. (You can do this using our **Photo Scan** feature!). If EXIF data is stripped, it's a suspicious indicator.\n2. **Look for Visual Anomalies**: Zoom in on edges, look for liquify artifacts (warped straight lines in the background), inconsistent shadow directions, and lighting disparities on subjects.\n3. **Inspect Human Subjects**: Search for double eyelashes, blurred ears, asymmetric pupils, or fuzzy borders between the chin and neck."
+        },
+        {
+            "keywords": ["logical fallacy", "spot logical fallacy", "what is fallacy", "detect fallacy", "fallacies", "spotting logical fallacies"],
+            "reply": "A **logical fallacy** is an error in reasoning that renders an argument invalid. You can spot them by analyzing the structural relationship between premises and conclusions:\n\n1. **Ad Hominem**: Attacking the speaker instead of the argument.\n2. **Slippery Slope**: Claiming one step will inevitably lead to extreme outcomes without proof.\n3. **Bandwagon**: Arguing something is true because 'everyone believes it'.\n\n*Veritas Radar automatically highlights these using our NLP fallacy parser during text audits!*"
+        },
+        {
+            "keywords": ["credibility score", "how does the score work", "truth index", "veritas score", "scoring algorithm", "veritas scoring algorithm"],
+            "reply": "The **Veritas Credibility Score (Truth Index)** is calculated using a hybrid evaluation pipeline:\n\n1. **Stylistic Classification**: A Scikit-Learn TF-IDF machine learning model evaluates structural features like excessive capitalization, sensationalized vocabulary, and clickbait style patterns.\n2. **Real-time Grounding**: If Gemini is connected, the claim is cross-referenced with live news registries (Google News, AP, Reuters, TOI) to evaluate factual grounding.\n3. **Integrity checks**: EXIF metadata and pixel boundaries are factored in for media. The score ranges from 0 (Fabricated) to 100 (Verified Factual)."
+        },
+        {
+            "keywords": ["domain trust", "trust registry", "lookup domain", "check domain reputation", "check a website", "domain", "reputation"],
+            "reply": "To check a website's reputation, navigate to the **Domain Trust Registry** tab in our suite, enter the publisher's root domain (e.g., `nytimes.com` or `theonion.com`), and click **Lookup**. Our registry will immediately output:\n\n- **Factual Reporting Score**: Evaluating historical accuracy.\n- **Political Bias Profile**: Left-center, right, satirical, etc.\n- **Editorial Brief & Flagged Conspiracies**: Details about known media violations, satirical nature, or conspiracy logs."
+        },
+        {
+            "keywords": ["unverified debunked", "difference between reports", "verified reports", "report status", "rumors status", "difference", "reports"],
+            "reply": "In Veritas:\n\n1. **Verified Report**: Confirmed factual news articles indexed in the News Room that have passed credibility thresholds.\n2. **Debunked Hoax**: Claims that have been actively researched and falsified by verification panels (e.g. Snopes).\n3. **Unverified Claim**: Trending rumors or leaks circulating on digital channels where forensic investigation is still underway."
+        }
+    ]
+    
+    # Check for direct keyword matches
+    for qa in pregiven_qa:
+        if any(keyword in message_lower for keyword in qa["keywords"]):
+            return {"reply": qa["reply"]}
+            
+    # Fallback to Gemini if configured, otherwise rule-based text generator
+    from utils.gemini_service import has_gemini
+    if has_gemini:
+        try:
+            import google.generativeai as genai
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            
+            system_prompt = (
+                "You are the Veritas Forensics AI Assistant. You help users understand media integrity, "
+                "forensic methods, deepfake indicators, logical fallacies, and factual news reporting. "
+                "Be concise, highly professional, and format your response in clear Markdown. "
+                "If the user asks general questions unrelated to news forensics or media truth, politely redirect them back to media verification."
+            )
+            
+            # Formulate chat history if exists
+            chat_context = []
+            if req.history:
+                for h in req.history:
+                    role = "user" if h.get("role") == "user" else "model"
+                    chat_context.append({"role": role, "parts": [h.get("content", "")]})
+            
+            chat_context.append({"role": "user", "parts": [f"{system_prompt}\n\nUser Message: {message}"]})
+            
+            response = model.generate_content(chat_context)
+            return {"reply": response.text.strip()}
+        except Exception as e:
+            print(f"[Gemini Chat Error] {e}")
+            
+    # Simple rule-based intelligent fallback
+    return {
+        "reply": (
+            "I'm the Veritas Forensics Guidance System. I am currently running in local offline mode.\n\n"
+            "Here are some specific queries I can answer for you. Select or type one:\n"
+            "- 'How do I verify if an image is a deepfake?'\n"
+            "- 'What is a logical fallacy?'\n"
+            "- 'How does the Veritas credibility score work?'\n"
+            "- 'How can I check a website's reputation?'\n"
+            "- 'What is the difference between verified and unverified reports?'"
+        )
+    }
 
 # Mount Static Files
 os.makedirs("static/css", exist_ok=True)

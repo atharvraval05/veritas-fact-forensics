@@ -14,6 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
         chatHistory: [] // list of {role: 'user'|'model', content: string}
     };
 
+    let supabaseClient = null;
+    let currentScanReportId = null;
+
+
     // DOM Navigation
     const navLinks = document.querySelectorAll(".nav-link");
     const pages = document.querySelectorAll(".page-view");
@@ -178,6 +182,8 @@ document.addEventListener("DOMContentLoaded", () => {
             loadVerifiedFeed();
         } else if (pageId === "leaks") {
             loadRumorsLedger();
+        } else if (pageId === "vault") {
+            loadVaultPage();
         }
     }
 
@@ -201,7 +207,50 @@ document.addEventListener("DOMContentLoaded", () => {
                 dbStatus.parentElement.querySelector(".status-dot").style.backgroundColor = "var(--color-success)";
                 dbStatus.parentElement.querySelector(".status-dot").style.boxShadow = "0 0 10px var(--color-success)";
             }
+
+            // Initialize Supabase Client dynamically
+            if (data.supabase_url && data.supabase_anon_key && !data.supabase_url.includes("your-supabase")) {
+                try {
+                    supabaseClient = supabase.createClient(data.supabase_url, data.supabase_anon_key);
+                    writeLog("[SYS] Supabase Frontend client initialized.");
+                    
+                    // Listen to auth changes
+                    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                        if (session) {
+                            state.user = {
+                                id: session.user.id,
+                                email: session.user.email,
+                                username: session.user.email.split("@")[0].toUpperCase()
+                            };
+                            renderUserSignedIn(state.user.username);
+                            writeLog(`[AUTH] Session synchronized: ${state.user.username}`);
+                        } else {
+                            state.user = null;
+                            renderUserSignedOut();
+                        }
+                    });
+                    
+                    // Restore existing session
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session) {
+                        state.user = {
+                            id: session.user.id,
+                            email: session.user.email,
+                            username: session.user.email.split("@")[0].toUpperCase()
+                        };
+                        renderUserSignedIn(state.user.username);
+                    }
+                } catch (e) {
+                    writeLog(`[SYS] Supabase Init failed: ${e.message}`, true);
+                }
+            }
+
             writeLog(`[SYS] Diagnostics engine bound. Mode: ${state.isMockMode ? "Mock Heuristics Model" : "Supabase PostgreSQL Database"}`);
+            
+            // Load homepage short feed and apply card tilt effects
+            loadLatestNewsShort();
+            applyCardTilt();
+
         } catch (e) {
             writeLog(`[SYS] Failed to configure settings. Falling back to offline engine.`);
         }
@@ -370,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Please enter a valid URL path.");
                 return;
             }
-            if (state.activeInputTab === "image" && !imageInput.files[0]) {
+            if (state.activeInputTab === "image" && !imageInput.files[0] && !state.pastedImageUrl) {
                 alert("Please drag or load an image file first.");
                 return;
             }
@@ -398,6 +447,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     })
                 });
                 data = await res.json();
+                state.currentScanReportId = data.id;
                 renderTextReport(textInput.value, data.analysis);
                 
             } else if (state.activeInputTab === "url") {
@@ -417,6 +467,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     throw new Error(err.detail || "URL Crawl failed.");
                 }
                 data = await res.json();
+                state.currentScanReportId = data.id;
                 renderTextReport(data.headline, data.analysis, urlInput.value);
                 
             } else if (state.activeInputTab === "image") {
@@ -435,6 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         throw new Error(err.detail || "Image download failed.");
                     }
                     data = await res.json();
+                    state.currentScanReportId = data.id;
                     renderImageReport({ name: "downloaded_image.jpg" }, data.exif, data.analysis, state.pastedImageUrl);
                 } else {
                     writeLog("[SYS] Scraping image EXIF headers...");
@@ -453,6 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         throw new Error(err.detail || "Image upload failed.");
                     }
                     data = await res.json();
+                    state.currentScanReportId = data.id;
                     renderImageReport(imageInput.files[0], data.exif, data.analysis);
                 }
                 
@@ -473,6 +526,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     throw new Error(err.detail || "Video upload failed.");
                 }
                 data = await res.json();
+                state.currentScanReportId = data.id;
                 renderVideoReport(videoInput.files[0], data.analysis);
             }
 
@@ -1009,6 +1063,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             verifiedNewsFeed.appendChild(card);
         });
+        applyCardTilt();
     }
 
     function openNewsModal(item) {
@@ -1210,20 +1265,86 @@ document.addEventListener("DOMContentLoaded", () => {
         authSubmitBtn.textContent = "REGISTER PROFILE";
     });
 
-    authForm.addEventListener("submit", (e) => {
+    authForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         
         const email = authEmail.value;
-        state.user = {
-            id: "agent-uid-12345",
-            email: email,
-            username: email.split("@")[0].toUpperCase()
-        };
+        const password = authPassword.value;
         
-        renderUserSignedIn(state.user.username);
-        authModal.classList.remove("active");
-        writeLog(`[AUTH] Agent verified: ${state.user.username}`);
+        if (supabaseClient) {
+            authSubmitBtn.disabled = true;
+            const originalText = authSubmitBtn.textContent;
+            authSubmitBtn.textContent = isRegistering ? "REGISTERING..." : "VERIFYING...";
+            
+            try {
+                if (isRegistering) {
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email: email,
+                        password: password
+                    });
+                    if (error) throw error;
+                    alert("Registration successful! Check your email to verify your profile, or login directly if auto-approved.");
+                    writeLog(`[AUTH] Registration submitted for: ${email}`);
+                } else {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    if (error) throw error;
+                    writeLog(`[AUTH] Sign-in successful for: ${email}`);
+                }
+                authModal.classList.remove("active");
+            } catch (err) {
+                writeLog(`[AUTH ERROR] Authentication failed: ${err.message}`, true);
+                alert("Authentication failed: " + err.message);
+            } finally {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.textContent = originalText;
+            }
+        } else {
+            // Mock Login fallback
+            state.user = {
+                id: "agent-uid-12345",
+                email: email,
+                username: email.split("@")[0].toUpperCase()
+            };
+            renderUserSignedIn(state.user.username);
+            authModal.classList.remove("active");
+            writeLog(`[AUTH] Mock agent verified: ${state.user.username}`);
+        }
     });
+
+    // Google Sign-in Handler
+    const googleAuthBtn = document.getElementById("googleAuthBtn");
+    if (googleAuthBtn) {
+        googleAuthBtn.addEventListener("click", async () => {
+            if (supabaseClient) {
+                try {
+                    writeLog("[AUTH] Redirecting to Google OAuth Provider...");
+                    const { error } = await supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: window.location.origin
+                        }
+                    });
+                    if (error) throw error;
+                } catch (err) {
+                    writeLog(`[AUTH ERROR] Google sign-in failed: ${err.message}`, true);
+                    alert("Google sign-in failed: " + err.message);
+                }
+            } else {
+                // Mock Google Login fallback
+                state.user = {
+                    id: "agent-uid-google",
+                    email: "google.agent@veritas.net",
+                    username: "GOOGLE_AGENT"
+                };
+                renderUserSignedIn(state.user.username);
+                authModal.classList.remove("active");
+                writeLog("[AUTH] Mock Google sign-in successful.");
+            }
+        });
+    }
 
     function renderUserSignedIn(username) {
         userPanel.innerHTML = `
@@ -1233,33 +1354,404 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button class="btn btn-secondary btn-sm" id="logoutBtn">LOGOUT</button>
             </div>
         `;
+        document.getElementById("navVaultBtn").style.display = "block";
         
-        document.getElementById("logoutBtn").addEventListener("click", () => {
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
             state.user = null;
-            userPanel.innerHTML = `<button class="btn btn-secondary" id="authBtn">Agent Login</button>`;
-            document.getElementById("authBtn").addEventListener("click", () => {
-                isRegistering = false;
-                tabLoginBtn.click();
-                authModal.classList.add("active");
-            });
+            renderUserSignedOut();
             writeLog("[AUTH] Agent logged off.");
         });
     }
 
+    function renderUserSignedOut() {
+        userPanel.innerHTML = `<button class="btn btn-secondary" id="authBtn">Agent Login</button>`;
+        document.getElementById("authBtn").addEventListener("click", () => {
+            isRegistering = false;
+            tabLoginBtn.click();
+            authModal.classList.add("active");
+        });
+        document.getElementById("navVaultBtn").style.display = "none";
+        if (state.activePage === "vault") {
+            navigateToPage("radar");
+        }
+    }
+
+    // Vault Page Rendering Engine
+    async function loadVaultPage() {
+        if (!state.user) {
+            writeLog("[SYS] Vault page requires active agent credentials.");
+            return;
+        }
+
+        const historyTableBody = document.getElementById("vaultHistoryTableBody");
+        const bookmarksGrid = document.getElementById("vaultBookmarksGrid");
+        const historyEmptyState = document.getElementById("historyEmptyState");
+        const bookmarksEmptyState = document.getElementById("bookmarksEmptyState");
+        const historyCount = document.getElementById("historyCount");
+        const bookmarkCount = document.getElementById("bookmarkCount");
+
+        // Fetch History List
+        try {
+            historyTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Retrieving ledger...</td></tr>';
+            const res = await fetch(`/api/history?user_id=${state.user.id}`);
+            const historyData = await res.json();
+
+            historyTableBody.innerHTML = "";
+            historyCount.textContent = `${historyData.length} Scans`;
+
+            if (historyData.length === 0) {
+                historyEmptyState.style.display = "block";
+            } else {
+                historyEmptyState.style.display = "none";
+                historyData.forEach(scan => {
+                    const row = document.createElement("tr");
+                    const dateStr = new Date(scan.created_at).toLocaleDateString();
+                    const inputBadge = `<span class="tag tag-type">${scan.input_type.toUpperCase()}</span>`;
+                    
+                    row.innerHTML = `
+                        <td>${inputBadge}</td>
+                        <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${scan.headline || scan.content || "Scan Target"}</td>
+                        <td><span style="font-weight: 700; color: ${scan.credibility_score >= 60 ? 'var(--color-success)' : (scan.credibility_score >= 40 ? 'var(--color-warning)' : 'var(--color-danger)')}">${scan.credibility_score}%</span></td>
+                        <td>${dateStr}</td>
+                    `;
+                    row.addEventListener("click", () => {
+                        loadScanReportIntoSuite(scan);
+                    });
+                    historyTableBody.appendChild(row);
+                });
+            }
+        } catch (e) {
+            writeLog(`[ERROR] Failed to retrieve history: ${e.message}`, true);
+        }
+
+        // Fetch Bookmarks List
+        try {
+            bookmarksGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;">Retrieving vault...</div>';
+            const res = await fetch(`/api/bookmarks?user_id=${state.user.id}`);
+            const bookmarksData = await res.json();
+
+            bookmarksGrid.innerHTML = "";
+            bookmarkCount.textContent = `${bookmarksData.length} Bookmarks`;
+
+            if (bookmarksData.length === 0) {
+                bookmarksEmptyState.style.display = "block";
+            } else {
+                bookmarksEmptyState.style.display = "none";
+                bookmarksData.forEach(scan => {
+                    const card = document.createElement("div");
+                    card.className = "vault-bookmark-card";
+                    card.innerHTML = `
+                        <button class="vault-bookmark-delete-btn" style="position: absolute; top: 12px; right: 12px; z-index: 10;">DELETE</button>
+                        <h4>${scan.headline || "Credibility Report"}</h4>
+                        <p>${scan.reasoning || ""}</p>
+                        <div class="vault-bookmark-footer">
+                            <span class="vault-bookmark-type">${scan.input_type.toUpperCase()}</span>
+                            <span class="vault-bookmark-score">${scan.credibility_score}% TRUTH</span>
+                        </div>
+                    `;
+                    
+                    // Clicking delete removes the bookmark
+                    card.querySelector(".vault-bookmark-delete-btn").addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        if (confirm("Are you sure you want to remove this bookmark?")) {
+                            await deleteBookmark(scan.id);
+                        }
+                    });
+
+                    // Clicking card reloads it into suite
+                    card.addEventListener("click", () => {
+                        loadScanReportIntoSuite(scan);
+                    });
+                    
+                    bookmarksGrid.appendChild(card);
+                });
+            }
+        } catch (e) {
+            writeLog(`[ERROR] Failed to retrieve bookmarks: ${e.message}`, true);
+        }
+        applyCardTilt();
+    }
+
+    async function deleteBookmark(scanId) {
+        try {
+            const res = await fetch("/api/bookmarks/delete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_id: state.user.id,
+                    scan_id: scanId
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                writeLog("[DB] Bookmark removed successfully.");
+                loadVaultPage();
+            } else {
+                alert("Failed to delete bookmark: " + result.error);
+            }
+        } catch (e) {
+            writeLog(`[ERROR] Delete bookmark failed: ${e.message}`, true);
+        }
+    }
+
+    function loadScanReportIntoSuite(scan) {
+        state.currentScanReport = scan;
+        state.currentScanReportId = scan.id;
+
+        // Render report depending on input type
+        if (scan.input_type === "text" || scan.input_type === "url") {
+            const mockUrl = scan.input_type === "url" ? scan.content : null;
+            renderTextReport(scan.content, scan, mockUrl);
+        } else if (scan.input_type === "image") {
+            const mockExif = scan.exif_data || { has_exif: false };
+            renderImageReport({ name: scan.headline || "scanned_image.jpg" }, mockExif, scan, scan.content);
+        } else if (scan.input_type === "video") {
+            renderVideoReport({ name: scan.headline || "scanned_video.mp4" }, scan);
+        }
+
+        navigateToPage("radar");
+        writeLog(`[SYS] Scan report ${scan.id} loaded back into diagnostics console.`);
+    }
+
     // Bookmark / Share report links
-    saveBookmarkBtn.addEventListener("click", () => {
+    saveBookmarkBtn.addEventListener("click", async () => {
         if (!state.currentScanReport) return;
-        writeLog("[DB] Saved analysis report to local vault bookmarks.");
-        alert("Report bookmarked successfully!");
+        if (!state.user) {
+            alert("Please login to save bookmarks.");
+            return;
+        }
+        if (!state.currentScanReportId) {
+            alert("Perform an audit scan first to bookmark it.");
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/bookmarks/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_id: state.user.id,
+                    scan_id: state.currentScanReportId
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                writeLog("[DB] Saved analysis report to database research vault.");
+                alert("Report bookmarked successfully!");
+            } else {
+                alert("Bookmark failed: " + (result.error || "already bookmarked"));
+            }
+        } catch (e) {
+            writeLog(`[ERROR] Bookmark save failed: ${e.message}`, true);
+        }
     });
 
     shareReportBtn.addEventListener("click", () => {
         if (!state.currentScanReport) return;
-        const mockLink = `https://veritas.net/report/scan-${Math.floor(Math.random()*1000000)}`;
+        const mockLink = `${window.location.origin}/report/${state.currentScanReportId || 'scan-id'}`;
         navigator.clipboard.writeText(mockLink);
-        writeLog(`[SYS] Shared report link copied: ${mockLink}`);
+        writeLog(`[SYS] Share link copied: ${mockLink}`);
         alert("Report link copied to clipboard!");
     });
+
+    // ==========================================
+    // 9. LATEST NEWS IN SHORT (HOMEPAGE PANEL)
+    // ==========================================
+    async function loadLatestNewsShort() {
+        const shortNewsFeed = document.getElementById("latestNewsShortFeed");
+        if (!shortNewsFeed) return;
+        
+        try {
+            const res = await fetch("/api/feeds");
+            const data = await res.json();
+            const news = data.global_news || [];
+            
+            shortNewsFeed.innerHTML = "";
+            if (news.length === 0) {
+                shortNewsFeed.innerHTML = '<div style="font-size:12px;color:var(--text-muted);text-align:center;">No news available.</div>';
+                return;
+            }
+            
+            // Show top 3 news items in short
+            news.slice(0, 3).forEach(item => {
+                const itemEl = document.createElement("div");
+                itemEl.className = "short-news-item";
+                itemEl.innerHTML = `
+                    <div class="short-news-header">
+                        <span class="short-news-source">${item.source.toUpperCase()}</span>
+                        <span class="short-news-time">VERIFIED</span>
+                    </div>
+                    <h4 class="short-news-title">${item.title}</h4>
+                    <p class="short-news-desc">${item.summary.substring(0, 75)}...</p>
+                    <a href="#" class="short-news-link">Read Full Analysis →</a>
+                `;
+                
+                // Add click events to open the news modal
+                const openAction = (e) => {
+                    e.preventDefault();
+                    openNewsModal(item);
+                };
+                
+                itemEl.querySelector(".short-news-title").addEventListener("click", openAction);
+                itemEl.querySelector(".short-news-link").addEventListener("click", openAction);
+                shortNewsFeed.appendChild(itemEl);
+            });
+            
+        } catch (e) {
+            shortNewsFeed.innerHTML = '<div style="font-size:12px;color:var(--color-danger);text-align:center;">Failed to load short news.</div>';
+        }
+    }
+
+    // ==========================================
+    // 10. FORENSICS CHATBOT CLIENT INTERACTION
+    // ==========================================
+    const chatbotTrigger = document.getElementById("chatbotTrigger");
+    const chatbotPanel = document.getElementById("chatbotPanel");
+    const chatbotCloseBtn = document.getElementById("chatbotCloseBtn");
+    const chatbotForm = document.getElementById("chatbotForm");
+    const chatbotInput = document.getElementById("chatbotInput");
+    const chatbotBody = document.getElementById("chatbotBody");
+
+    chatbotTrigger.addEventListener("click", () => {
+        chatbotPanel.classList.toggle("active");
+        if (chatbotPanel.classList.contains("active")) {
+            chatbotInput.focus();
+        }
+    });
+
+    chatbotCloseBtn.addEventListener("click", () => {
+        chatbotPanel.classList.remove("active");
+    });
+
+    // Handle suggestion button clicks
+    chatbotBody.addEventListener("click", (e) => {
+        const btn = e.target.closest(".chat-suggest-btn");
+        if (btn) {
+            const question = btn.getAttribute("data-q");
+            sendChatMessage(question);
+        }
+    });
+
+    chatbotForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const msg = chatbotInput.value.trim();
+        if (!msg) return;
+        
+        sendChatMessage(msg);
+        chatbotInput.value = "";
+    });
+
+    async function sendChatMessage(message) {
+        // Render User Message
+        appendMessageBubble("user", message);
+        
+        // Remove suggestions box if present
+        const suggestionsWrap = chatbotBody.querySelector(".chat-suggestions");
+        if (suggestionsWrap) {
+            suggestionsWrap.remove();
+        }
+        
+        // Scroll body
+        chatbotBody.scrollTop = chatbotBody.scrollHeight;
+        
+        // Render Loading Indicator
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "chat-message assistant chat-loading";
+        loadingEl.innerHTML = `<span class="pulsing" style="color:var(--text-muted)">Agent typing...</span>`;
+        chatbotBody.appendChild(loadingEl);
+        chatbotBody.scrollTop = chatbotBody.scrollHeight;
+
+        try {
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: message,
+                    history: state.chatHistory
+                })
+            });
+            const data = await res.json();
+            
+            // Remove loading
+            loadingEl.remove();
+            
+            // Render Assistant Message
+            appendMessageBubble("assistant", data.reply);
+            
+            // Update chat history state
+            state.chatHistory.push({ role: "user", content: message });
+            state.chatHistory.push({ role: "model", content: data.reply });
+            if (state.chatHistory.length > 20) {
+                state.chatHistory.shift();
+                state.chatHistory.shift();
+            }
+            
+        } catch (e) {
+            loadingEl.remove();
+            appendMessageBubble("assistant", "Guidance link offline. Unable to reach forensics assistant.");
+        }
+        
+        chatbotBody.scrollTop = chatbotBody.scrollHeight;
+    }
+
+    function appendMessageBubble(sender, text) {
+        const bubble = document.createElement("div");
+        bubble.className = `chat-message ${sender}`;
+        
+        // Replace newlines with <br> and format bold markdown
+        let formatted = text
+            .replace(/\n/g, "<br>")
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.*?)\*/g, "<em>$1</em>");
+            
+        bubble.innerHTML = `<p>${formatted}</p>`;
+        chatbotBody.appendChild(bubble);
+    }
+
+    // ==========================================
+    // 11. EXTRA INTERACTION POLISH
+    // ==========================================
+
+    // Click outside modal overlays to close
+    window.addEventListener("click", (e) => {
+        if (e.target === authModal) {
+            authModal.classList.remove("active");
+        }
+        if (e.target === newsPreviewModal) {
+            newsPreviewModal.classList.remove("active");
+        }
+    });
+
+    // Classy 3D Card Hover Tilt Effect (Insta Reels Style)
+    function applyCardTilt() {
+        const cards = document.querySelectorAll(".card, .latest-news-short-card, .feed-item, .vault-bookmark-card");
+        
+        cards.forEach(card => {
+            card.onmousemove = (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const xc = rect.width / 2;
+                const yc = rect.height / 2;
+                
+                // Tilt multiplier (max 4 degrees)
+                const angleX = -(y - yc) / yc * 4;
+                const angleY = (x - xc) / xc * 4;
+                
+                card.style.transform = `perspective(800px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale3d(1.015, 1.015, 1.015)`;
+                card.style.transition = "transform 0.05s ease";
+            };
+            
+            card.onmouseleave = () => {
+                card.style.transform = `perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                card.style.transition = "transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)";
+            };
+        });
+    }
 
     // Run Startup Initializers
     initConfig();
