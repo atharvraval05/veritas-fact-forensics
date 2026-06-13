@@ -107,23 +107,23 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Atmosphere Glow
             const glowGrad = ctx.createRadialGradient(cx, cy, r * 0.9, cx, cy, r * 1.15);
-            glowGrad.addColorStop(0, "rgba(0, 242, 254, 0)");
-            glowGrad.addColorStop(0.8, "rgba(0, 242, 254, 0.08)");
-            glowGrad.addColorStop(1, "rgba(0, 242, 254, 0)");
+            glowGrad.addColorStop(0, "rgba(79, 70, 229, 0)");
+            glowGrad.addColorStop(0.8, "rgba(79, 70, 229, 0.08)");
+            glowGrad.addColorStop(1, "rgba(79, 70, 229, 0)");
             ctx.fillStyle = glowGrad;
             ctx.beginPath();
             ctx.arc(cx, cy, r * 1.2, 0, Math.PI * 2);
             ctx.fill();
             
             // Outer sphere outline
-            ctx.strokeStyle = "rgba(0, 242, 254, 0.25)";
+            ctx.strokeStyle = "rgba(79, 70, 229, 0.25)";
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.stroke();
 
             // Latitude lines
-            ctx.strokeStyle = "rgba(0, 242, 254, 0.08)";
+            ctx.strokeStyle = "rgba(79, 70, 229, 0.08)";
             for (let i = -4; i <= 4; i++) {
                 const latY = cy + (i * r) / 5;
                 const latR = Math.sqrt(r * r - (latY - cy) * (latY - cy));
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             
             // Longitude lines (rotating)
-            ctx.strokeStyle = "rgba(0, 242, 254, 0.12)";
+            ctx.strokeStyle = "rgba(79, 70, 229, 0.12)";
             for (let i = 0; i < 6; i++) {
                 const lonAngle = angle + (i * Math.PI) / 6;
                 const rx = Math.sin(lonAngle) * r;
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Radar sweep sweep
             const sweepAngle = (angle * 1.5) % (Math.PI * 2);
-            ctx.strokeStyle = "rgba(0, 242, 254, 0.15)";
+            ctx.strokeStyle = "rgba(79, 70, 229, 0.15)";
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.lineTo(cx + Math.cos(sweepAngle) * r, cy + Math.sin(sweepAngle) * r);
@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
         function animateSpread() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            ctx.strokeStyle = "rgba(0, 242, 254, 0.15)";
+            ctx.strokeStyle = "rgba(79, 70, 229, 0.15)";
             ctx.lineWidth = 1.5;
             nodes.forEach(node => {
                 if (node.parent !== undefined) {
@@ -1333,22 +1333,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     <p>${item.summary.substring(0, 100)}...</p>
                     <div class="feed-item-footer">
                         <span style="font-weight: 700; color: var(--color-success);">TRUTH FACTOR: ${item.credibility_score}%</span>
-                        <span style="color: var(--color-primary); font-weight: bold;">View Details →</span>
                     </div>
-                </div>
-                
-                <!-- Hover Glass Preview Overlay -->
-                <div class="feed-item-hover-preview">
-                    <div class="hover-preview-header">
-                        <span class="feed-item-source">${item.source.toUpperCase()}</span>
-                        <span style="font-weight: 800; color: var(--color-success);">${item.credibility_score}% AUTHENTIC</span>
-                    </div>
-                    <div class="hover-preview-body">
-                        <p>${item.summary}</p>
-                    </div>
-                    <div class="hover-preview-footer">
-                        <button class="btn btn-secondary hover-verify-btn">Verify in Suite 🔬</button>
-                        <button class="btn btn-primary hover-source-btn">Go to Source 🔗</button>
+                    <div class="feed-item-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="btn btn-secondary btn-sm card-verify-btn" style="flex: 1; font-size: 11px; padding: 6px;">Verify in Suite 🔬</button>
+                        <button class="btn btn-primary btn-sm card-source-btn" style="flex: 1; font-size: 11px; padding: 6px;">Go to Source 🔗</button>
                     </div>
                 </div>
             `;
@@ -1358,13 +1346,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 openNewsModal(item);
             });
             
-            // Hover buttons events
-            card.querySelector(".hover-source-btn").addEventListener("click", (e) => {
+            // buttons events
+            card.querySelector(".card-source-btn").addEventListener("click", (e) => {
                 e.stopPropagation();
                 window.open(item.url, "_blank");
             });
             
-            card.querySelector(".hover-verify-btn").addEventListener("click", (e) => {
+            card.querySelector(".card-verify-btn").addEventListener("click", (e) => {
                 e.stopPropagation();
                 urlInput.value = item.url.replace("https://", "");
                 navigateToPage("radar");
@@ -1953,13 +1941,30 @@ document.addEventListener("DOMContentLoaded", () => {
                         <p>${item.summary.substring(0, 110)}...</p>
                         <div class="feed-item-footer">
                             <span style="font-weight: 700; color: var(--color-success);">TRUTH FACTOR: ${item.credibility_score}%</span>
-                            <span style="color: var(--color-primary); font-weight: bold;">View Details →</span>
+                        </div>
+                        <div class="feed-item-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="btn btn-secondary btn-sm card-verify-btn" style="flex: 1; font-size: 11px; padding: 6px;">Verify in Suite 🔬</button>
+                            <button class="btn btn-primary btn-sm card-source-btn" style="flex: 1; font-size: 11px; padding: 6px;">Go to Source 🔗</button>
                         </div>
                     </div>
                 `;
                 
                 card.addEventListener("click", () => {
                     openNewsModal(item);
+                });
+                
+                card.querySelector(".card-source-btn").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    window.open(item.url, "_blank");
+                });
+                
+                card.querySelector(".card-verify-btn").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    urlInput.value = item.url.replace("https://", "");
+                    navigateToPage("radar");
+                    const tabBtn = document.querySelector('[data-tab="url"]');
+                    if (tabBtn) tabBtn.click();
+                    writeLog(`[SYS] Scraped verified item URL imported for scanner: ${item.url}`);
                 });
                 
                 homepageNewsFeed.appendChild(card);

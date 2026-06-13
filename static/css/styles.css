@@ -1,39 +1,39 @@
 /* Veritas truth Operations Center Stylesheet v3.0 */
 
 :root {
-    /* Color System - Obsidian Dark Command Center */
-    --color-bg: #020204;            /* Pure Obsidian Black */
-    --color-bg-alt: #07080e;        /* Deep Space Navy */
-    --color-surface: rgba(13, 15, 27, 0.7); /* Luminous Glassmorphic Card */
-    --color-surface-hover: rgba(22, 25, 46, 0.8);
-    --color-border: rgba(0, 242, 254, 0.15); /* Glowing Cyan Line */
-    --color-border-hover: rgba(0, 242, 254, 0.4);
+    /* Color System - Premium Vibrant Light-Mode Editorial Theme */
+    --color-bg: #f1f5f9;            /* Bright Slate Paper Background */
+    --color-bg-alt: #e2e8f0;        /* Shading Slate Gray */
+    --color-surface: #ffffff;       /* Pure White Card */
+    --color-surface-hover: #fafcff;
+    --color-border: #cbd5e1;        /* Distinct slate border line */
+    --color-border-hover: #4f46e5;  /* Vibrant Indigo border on hover */
     
-    /* Neon Tactical Accents */
-    --color-primary: #00f2fe;       /* Electric Cyan */
-    --color-secondary: #7c3aed;     /* Signal Purple */
-    --color-accent-pink: #ff007f;   /* Hot Magenta */
-    --color-accent-purple: #c084fc; /* Light Luminous Violet */
+    /* Vibrant Neon & Tactical Accents */
+    --color-primary: #0f172a;       /* Slate Dark Navy */
+    --color-secondary: #4f46e5;     /* Neural Indigo Purple */
+    --color-accent-pink: #ec4899;   /* Bright Pink Alert */
+    --color-accent-purple: #8b5cf6; /* Royal Violet Alert */
     
-    --color-success: #00ffaa;       /* Verification Emerald */
-    --color-danger: #ff0055;        /* Threat Red */
-    --color-warning: #ffb700;       /* Alert Amber */
+    --color-success: #10b981;       /* Verification Emerald */
+    --color-danger: #ef4444;        /* Threat Crimson */
+    --color-warning: #f59e0b;       /* Alert Amber */
     
     /* Monospace Typography Levels */
-    --text-primary: #ffffff;        /* High contrast white */
-    --text-secondary: #8b9bb4;      /* Cool Muted Blue Gray */
-    --text-muted: #4e5b6c;          /* Dark Slate Gray */
+    --text-primary: #1e293b;        /* Crisp Charcoal Ink */
+    --text-secondary: #475569;      /* Slate Gray */
+    --text-muted: #64748b;          /* Soft Gray */
     
     --font-heading: 'Plus Jakarta Sans', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'Fira Code', monospace;
     
     /* Animations & Transitions */
-    --ease-in-out: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out: cubic-bezier(0.16, 1, 0.3, 1);
     --transition-speed: 0.25s;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.8);
-    --shadow-md: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 20px 60px 0 rgba(0, 242, 254, 0.1);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.05);
+    --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
 }
 
 /* Base resets & scrollbars */
@@ -84,8 +84,8 @@ body {
     position: absolute;
     border-radius: 50%;
     filter: blur(140px);
-    opacity: 0.22;
-    mix-blend-mode: screen;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
 }
 .orb-1 {
     top: -10%;
@@ -147,7 +147,7 @@ body {
 .narrative-landing-portal {
     position: relative;
     width: 100%;
-    background-color: #020204;
+    background-color: var(--color-bg);
     z-index: 10;
 }
 
@@ -202,7 +202,7 @@ body {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.4));
+    filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.2));
 }
 
 .hero-main-title p {
@@ -261,8 +261,8 @@ body {
     gap: 24px;
     margin-top: -20px;
     z-index: 5;
-    background: rgba(7, 8, 14, 0.8);
-    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid var(--color-border) !important;
     padding: 12px 24px;
     border-radius: 4px;
     backdrop-filter: blur(10px);
@@ -284,7 +284,7 @@ body {
 .hud-stat-item strong {
     font-family: var(--font-mono);
     font-size: 14px;
-    color: #ffffff;
+    color: var(--text-primary) !important;
     margin-top: 4px;
 }
 
@@ -495,14 +495,15 @@ body {
 }
 
 .sidebar-nav .nav-link.active {
-    color: #000000 !important;
-    background-color: var(--color-primary) !important;
-    border-color: var(--color-primary) !important;
-    box-shadow: 0 4px 14px rgba(0, 242, 254, 0.25) !important;
+    background-color: var(--color-bg-alt) !important;
+    color: var(--color-secondary) !important;
+    border-left: 4px solid var(--color-secondary) !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
 }
 
 .sidebar-nav .nav-link.active .nav-num {
-    color: rgba(0, 0, 0, 0.6) !important;
+    color: var(--color-secondary) !important;
 }
 
 .nav-num {
@@ -552,7 +553,7 @@ body {
     font-family: var(--font-heading);
     font-size: 10px;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--text-primary) !important;
     letter-spacing: 0.5px;
 }
 
@@ -725,7 +726,7 @@ body {
 
 .scan-type-tabs {
     display: flex;
-    background-color: rgba(22, 24, 48, 0.4);
+    background-color: var(--color-bg-alt);
     border: 1px solid var(--color-border);
     padding: 3px;
     border-radius: 2px;
@@ -745,12 +746,12 @@ body {
 }
 
 .scan-tab:hover {
-    color: #ffffff;
+    color: var(--color-secondary);
 }
 
 .scan-tab.active {
-    background-color: var(--color-primary);
-    color: #000000;
+    background-color: var(--color-secondary) !important;
+    color: #ffffff !important;
     box-shadow: var(--shadow-sm);
     font-weight: 800;
 }
@@ -1442,7 +1443,7 @@ input[type="text"] {
 .verdict-block h5 {
     font-family: var(--font-heading);
     font-size: 11px;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 10px;
     letter-spacing: 1px;
 }
@@ -1461,7 +1462,7 @@ input[type="text"] {
 .related-news-header {
     font-family: var(--font-heading);
     font-size: 11px;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 16px;
     letter-spacing: 1px;
 }
@@ -1595,13 +1596,13 @@ input[type="text"] {
     transition: all var(--transition-speed);
 }
 .filter-btn:hover {
-    border-color: var(--color-primary);
-    color: #ffffff;
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
 }
 .filter-btn.active {
-    background-color: var(--color-primary);
-    color: #000000;
-    border-color: var(--color-primary);
+    background-color: var(--color-secondary) !important;
+    color: #ffffff !important;
+    border-color: var(--color-secondary) !important;
     font-weight: 800;
 }
 
@@ -1679,7 +1680,7 @@ input[type="text"] {
     font-size: 15px;
     font-weight: 800;
     line-height: 1.4;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 10px;
 }
 
@@ -2049,7 +2050,7 @@ input[type="text"] {
 .vault-bookmark-card h4 {
     font-family: var(--font-heading);
     font-size: 14px;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 8px;
     padding-right: 50px;
 }
@@ -2105,12 +2106,12 @@ input[type="text"] {
 }
 
 .modal-card {
-    background-color: #07080e !important;
+    background-color: var(--color-surface) !important;
     border: 2px solid var(--color-border) !important;
     border-radius: 4px !important;
     max-width: 500px;
     width: 90%;
-    box-shadow: 0 20px 80px rgba(0,0,0,0.8) !important;
+    box-shadow: var(--shadow-lg) !important;
 }
 
 .news-preview-card {
@@ -2138,7 +2139,7 @@ input[type="text"] {
     cursor: pointer;
 }
 .close-btn:hover {
-    color: #ffffff;
+    color: var(--color-secondary);
 }
 
 .auth-tabs {
@@ -2181,10 +2182,10 @@ input[type="text"] {
 }
 .form-group input {
     width: 100%;
-    background-color: rgba(22, 24, 48, 0.3);
+    background-color: var(--color-bg);
     border: 2px solid var(--color-border);
     border-radius: 4px;
-    color: #ffffff;
+    color: var(--text-primary);
     padding: 10px 14px;
     outline: none;
     font-size: 13px;
@@ -2241,17 +2242,17 @@ input[type="text"] {
     left: 0;
     width: 100%;
     height: 44px;
-    background: linear-gradient(to bottom, #020204 0%, #151821 50%, #020204 100%);
+    background: linear-gradient(to bottom, var(--color-bg-alt) 0%, var(--color-bg) 50%, var(--color-bg-alt) 100%);
     border-top: 2px solid var(--color-border);
     z-index: 999;
     display: flex;
     align-items: center;
     overflow: hidden;
-    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.05);
 }
 .scrolling-cylinder:hover {
-    border-top-color: var(--color-primary);
-    box-shadow: 0 -12px 30px rgba(0, 242, 254, 0.1);
+    border-top-color: var(--color-secondary);
+    box-shadow: 0 -4px 20px rgba(79, 70, 229, 0.1);
 }
 .cylinder-shine {
     position: absolute;
@@ -2272,8 +2273,8 @@ input[type="text"] {
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 700;
-    color: #ffffff;
-    text-shadow: 0 0 8px rgba(0, 242, 254, 0.6);
+    color: var(--color-secondary);
+    text-shadow: none;
     white-space: nowrap;
     animation: cylinder-scroll 30s linear infinite;
     display: inline-block;
@@ -2286,7 +2287,7 @@ input[type="text"] {
 
 .app-footer {
     border-top: 2px solid var(--color-border);
-    background-color: #020204;
+    background-color: var(--color-bg-alt);
     padding: 24px 0 68px 0; /* padding for cylinder bar */
     z-index: 10;
     position: relative;
@@ -2360,7 +2361,7 @@ input[type="text"] {
     right: 0;
     width: 380px;
     height: 500px;
-    background-color: #07080e;
+    background-color: var(--color-surface);
     border: 2px solid var(--color-border);
     border-radius: 4px;
     box-shadow: var(--shadow-lg);
@@ -2397,7 +2398,7 @@ input[type="text"] {
     font-family: var(--font-heading);
     font-size: 13.5px;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--text-primary);
     line-height: 1.2;
     letter-spacing: 0.5px;
 }
@@ -2413,7 +2414,7 @@ input[type="text"] {
     cursor: pointer;
 }
 .chatbot-close:hover {
-    color: #ffffff;
+    color: var(--color-secondary);
 }
 
 .chatbot-body {
@@ -2423,7 +2424,7 @@ input[type="text"] {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background-color: #030305;
+    background-color: var(--color-bg);
 }
 
 .chat-message {
@@ -2449,10 +2450,10 @@ input[type="text"] {
 
 .chat-message.user {
     background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: #000000;
+    color: #ffffff;
     align-self: flex-end;
     font-weight: 700;
-    box-shadow: 0 4px 10px rgba(0, 242, 254, 0.15);
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15);
 }
 
 .chat-suggestions {
@@ -2475,15 +2476,15 @@ input[type="text"] {
     transition: all var(--transition-speed);
 }
 .chat-suggest-btn:hover {
-    border-color: var(--color-primary);
-    color: #ffffff;
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
     transform: translateX(2px);
 }
 
 .chatbot-input-area {
     display: flex;
     border-top: 2px solid var(--color-border);
-    background-color: #07080e;
+    background-color: var(--color-surface);
     padding: 10px 12px;
 }
 .chatbot-input-area input {
@@ -2493,11 +2494,11 @@ input[type="text"] {
     font-size: 12.5px;
     padding: 8px 12px;
     background: transparent;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 .chatbot-send-btn {
     background-color: var(--color-primary);
-    color: #000000;
+    color: #ffffff;
     border: none;
     border-radius: 2px;
     font-family: var(--font-heading);
@@ -2508,7 +2509,7 @@ input[type="text"] {
     transition: background-color var(--transition-speed);
 }
 .chatbot-send-btn:hover {
-    background-color: #00c2cc;
+    background-color: var(--color-secondary);
 }
 
 /* 3D Tilt Effect Utility */
@@ -2638,5 +2639,242 @@ input[type="text"] {
         flex-shrink: 0;
     }
 }
+
+/* ==========================================
+   EDITORIAL LIGHT-MODE CORRECTIONS & POLISH
+   ========================================== */
+
+/* Premium Card hover lifts */
+.card, .latest-news-short-card, .feed-item, .vault-bookmark-card, .brutalist-method-card, .metric-card-brutalist {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border: 1px solid var(--color-border) !important;
+    background-color: var(--color-surface) !important;
+    color: var(--text-primary) !important;
+}
+
+.card:hover, .latest-news-short-card:hover, .feed-item:hover, .vault-bookmark-card:hover, .brutalist-method-card:hover, .metric-card-brutalist:hover {
+    transform: scale(1.025) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border-color: var(--color-secondary) !important;
+}
+
+/* Sidebar Corrections */
+.app-sidebar {
+    background-color: #faf9f6 !important;
+    border-right: 1px solid var(--color-border) !important;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    background: transparent !important;
+    border-left: 3px solid transparent;
+}
+
+.nav-link.active {
+    background-color: var(--color-bg-alt) !important;
+    color: var(--color-primary) !important;
+    border-left: 3px solid var(--color-secondary) !important;
+    font-weight: 700 !important;
+}
+
+.nav-link:hover {
+    background-color: var(--color-bg-alt) !important;
+    color: var(--color-primary) !important;
+}
+
+/* Input Fields Contrast */
+textarea, input[type="text"], input[type="email"], input[type="password"] {
+    background-color: #ffffff !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--color-border) !important;
+    padding: 12px !important;
+    font-family: var(--font-body) !important;
+}
+
+textarea:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+    border-color: var(--color-secondary) !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08) !important;
+    outline: none !important;
+}
+
+.sidebar-brand h1 {
+    color: var(--color-primary) !important;
+}
+.sidebar-brand .brand-ver {
+    background-color: var(--color-secondary) !important;
+    color: #ffffff !important;
+}
+
+/* Tactical preloader logo */
+.loader-content {
+    border-color: var(--color-secondary) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+.loader-header {
+    border-bottom-color: var(--color-secondary) !important;
+    color: var(--color-secondary) !important;
+}
+.progress-bar-fill {
+    background-color: var(--color-secondary) !important;
+    box-shadow: 0 0 10px var(--color-secondary) !important;
+}
+
+/* Circular trust index dials */
+.circle-bg {
+    stroke: var(--color-bg-alt) !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--color-secondary) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+.btn-primary:hover {
+    background-color: #4338ca !important;
+}
+.btn-console-launch {
+    background-color: var(--color-secondary) !important;
+    color: #ffffff !important;
+}
+.btn-console-launch:hover {
+    background-color: #4338ca !important;
+}
+
+/* Ticker banner */
+.ticker-banner {
+    background-color: var(--color-primary) !important;
+    color: #ffffff !important;
+}
+.ticker-label {
+    background-color: var(--color-secondary) !important;
+    color: #ffffff !important;
+}
+
+/* Scrolling cylinder marquee strip */
+.scrolling-cylinder {
+    background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.cylinder-ticker-track {
+    color: #faf9f6 !important;
+}
+
+/* Chatbot Widget light contrast */
+.chatbot-trigger {
+    background: var(--color-secondary) !important;
+    color: #ffffff !important;
+    box-shadow: var(--shadow-md) !important;
+}
+.chatbot-panel {
+    background: #ffffff !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+.chatbot-header {
+    background: var(--color-primary) !important;
+    color: #ffffff !important;
+}
+.chat-message.user p {
+    background-color: var(--color-bg-alt) !important;
+    color: var(--text-primary) !important;
+}
+.chat-message.assistant p {
+    background-color: #ffffff !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--color-border) !important;
+}
+.chatbot-input-area {
+    border-top: 1px solid var(--color-border) !important;
+    background: #ffffff !important;
+}
+.chatbot-input-area input {
+    background: #ffffff !important;
+    color: var(--text-primary) !important;
+}
+.chatbot-send-btn {
+    background: var(--color-secondary) !important;
+    color: #ffffff !important;
+}
+.chatbot-send-btn:hover {
+    background: #4338ca !important;
+}
+
+/* Diagnostic pipeline log console */
+.term-console {
+    background-color: #1a1a20 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.term-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.term-body {
+    color: #e2e8f0 !important;
+}
+
+/* Explicit Contrast Rules for bright mode elements */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-primary) !important;
+    font-weight: 700 !important;
+}
+
+p, span, li, a, td, th {
+    color: var(--text-primary);
+}
+
+.btn-primary, .btn-primary span, .btn-console-launch, .btn-console-launch span, .chatbot-send-btn, .chatbot-send-btn span, .card-source-btn, .card-source-btn span {
+    color: #ffffff !important;
+}
+
+.text-secondary, .section-desc, .field-desc, .canvas-caption {
+    color: var(--text-secondary) !important;
+}
+
+/* Modal and dialog contrast fix */
+.modal-card {
+    background: #ffffff !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.modal-header h2 {
+    color: var(--color-primary) !important;
+}
+
+.auth-tab {
+    color: var(--text-secondary) !important;
+    background: transparent !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+.auth-tab.active {
+    color: var(--color-primary) !important;
+    border-bottom: 2px solid var(--color-secondary) !important;
+    font-weight: 700 !important;
+}
+
+/* Logical fallacy highlight background contrast */
+.fallacy-highlight {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+    border-bottom: 2px dashed var(--color-warning) !important;
+    color: var(--text-primary) !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.fallacy-highlight:hover {
+    background-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+.fallacy-highlight.selected {
+    background-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Bulletproof primary button text contrast rule */
+#runAuditBtn, #runAuditBtn *, .btn-primary, .btn-primary *, .btn-console-launch, .btn-console-launch *, .chatbot-send-btn, .chatbot-send-btn *, .card-source-btn, .card-source-btn * {
+    color: #ffffff !important;
+}
+
 
 

@@ -32,6 +32,7 @@ general_images = [
 ]
 
 async def fetch_rss_news() -> list:
+    import hashlib
     articles = []
     urls = [
         {"url": "https://news.google.com/rss/search?q=India&hl=en-IN&gl=IN&ceid=IN:en", "type": "India"},
@@ -48,8 +49,9 @@ async def fetch_rss_news() -> list:
                 if resp.status_code != 200:
                     continue
                 
-                root = ET.fromstring(resp.text)
-                for item in root.findall(".//item")[:15]:
+                # Parse raw bytes content to handle XML encoding flags natively
+                root = ET.fromstring(resp.content)
+                for item in root.findall(".//item")[:35]:
                     title_full = item.find("title").text or ""
                     link = item.find("link").text or ""
                     pub_date_str = item.find("pubDate").text or ""
@@ -73,17 +75,20 @@ async def fetch_rss_news() -> list:
                     title_lower = title.lower()
                     if any(w in title_lower for w in ["space", "nasa", "science", "physics", "mars", "moon", "lunar", "biology", "health"]):
                         category = "Science"
-                        img = random.choice(science_images)
                     elif any(w in title_lower for w in ["market", "economy", "stock", "interest", "finance", "bank", "inflation"]):
                         category = "Economics"
-                        img = random.choice(economics_images)
                     elif any(w in title_lower for w in ["tech", "ai", "quantum", "chip", "robot", "cyber"]):
                         category = "Tech"
-                        img = random.choice(tech_images)
                     else:
                         category = "Politics"
-                        img = random.choice(general_images)
-                        
+                    
+                    # Generate a unique and stable image seed based on the title hash
+                    h = hashlib.md5(title.encode('utf-8')).hexdigest()
+                    img = f"https://picsum.photos/seed/{h[:8]}/600/400"
+                    
+                    # Robust India news mapping
+                    is_india = 1 if source["type"] == "India" or any(w in title_lower for w in ["india", "delhi", "mumbai", "modi", "gandhi", "isro", "bengaluru"]) or "hindu" in news_source.lower() or "times of india" in news_source.lower() else 0
+                    
                     articles.append({
                         "id": str(random.randint(10000, 99999)),
                         "title": title,
@@ -95,12 +100,12 @@ async def fetch_rss_news() -> list:
                         "summary": re.sub('<[^<]+?>', '', description)[:200] + "...",
                         "category": category,
                         "created_at": pub_date.isoformat(),
-                        "is_india": 1 if source["type"] == "India" or "india" in title_lower or "india" in news_source.lower() else 0
+                        "is_india": is_india
                     })
             except Exception as e:
                 print(f"[RSS Fetch Error] {e}")
                 
-    # Sort: India news first, then newest first
+    # Sort: India news first (is_india DESC), then newest first (created_at DESC)
     articles.sort(key=lambda x: (x["is_india"], x["created_at"]), reverse=True)
     return articles
 
@@ -241,10 +246,15 @@ async def analyze_text(req: TextAnalysisRequest):
 
 @app.post("/api/analyze/url")
 async def analyze_url(url: str = Form(...), user_id: Optional[str] = Form(None)):
-    headline, text = await scrape_url_text(url)
-    
-    if len(text.strip()) < 10:
-        raise HTTPException(status_code=400, detail="The crawled URL did not contain sufficient text content to analyze.")
+    try:
+        headline, text = await scrape_url_text(url)
+        if len(text.strip()) < 10:
+            raise Exception("Crawl returned insufficient text content from URL page DOM.")
+    except Exception as e:
+        print(f"[Crawl Fallback] Local scrape failed for {url}: {e}")
+        clean_url = url.replace("https://", "").replace("http://", "").split("/")[0]
+        headline = f"Audit Report: {clean_url}"
+        text = f"Analyzing content and credibility for URL: {url}. (Direct HTTP scrape failed: {str(e)}. Verifying platform facts dynamically via Google Search Grounding)."
         
     result = analyze_article_text(text, url)
     

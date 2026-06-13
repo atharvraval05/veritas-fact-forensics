@@ -407,6 +407,50 @@ def lookup_domain_reputation(domain: str) -> dict:
     if domain in mock_db.domain_reputation_registry:
         return mock_db.domain_reputation_registry[domain]
     
+    # Online Gemini query fallback if Gemini is active
+    from utils.gemini_service import has_gemini
+    if has_gemini:
+        try:
+            import google.generativeai as genai
+            import json
+            import re
+            
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            prompt = f"""
+            You are a media bias and credibility expert. Provide a factual reporting profile for the web domain: "{domain}".
+            
+            Your profile MUST include:
+            1. The common publisher name (e.g. "Instagram", "Reddit", "New York Times").
+            2. Factual reporting rating (e.g. "High", "Mixed", "Low", "Very High").
+            3. Political bias profile (e.g. "Left-Center Leaning", "Right Leaning", "Center", "Non-political / Social Media", "Satire", "Conspiracy / Pseudoscience").
+            4. A professional 2-3 sentence description of the platform's role, reputation, and standard credibility rating.
+            5. Known conspiracies, controversies, or hoaxes promoted (e.g. "Frequent misinformation warnings", "None logged in trust registry", "Satirical content only").
+            
+            The JSON structure MUST look exactly like this:
+            {{
+              "name": "<Publisher Name>",
+              "factual_reporting": "<High / Mixed / Low / Very High / etc.>",
+              "bias": "<Bias profile label>",
+              "description": "<Professional profile description>",
+              "known_conspiracies": "<Logged controversies or 'None logged' description>"
+            }}
+            """
+            response = model.generate_content(prompt)
+            response_text = response.text.strip()
+            if response_text.startswith("```"):
+                response_text = re.sub(r"^```(json)?", "", response_text)
+                response_text = re.sub(r"```$", "", response_text).strip()
+            result = json.loads(response_text)
+            return {
+                "name": result.get("name", domain.capitalize()),
+                "factual_reporting": result.get("factual_reporting", "Mixed"),
+                "bias": result.get("bias", "Neutral"),
+                "description": result.get("description", ""),
+                "known_conspiracies": result.get("known_conspiracies", "None logged.")
+            }
+        except Exception as e:
+            print(f"[Gemini Domain Lookup Error] {e}")
+            
     # Generic fallback logic
     return {
         "name": domain.capitalize(),
