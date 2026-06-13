@@ -1304,9 +1304,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (state.newsSearchQuery.trim() !== "") {
             const query = state.newsSearchQuery.toLowerCase();
             filtered = filtered.filter(item => 
-                item.title.toLowerCase().includes(query) || 
-                item.summary.toLowerCase().includes(query) || 
-                item.source.toLowerCase().includes(query)
+                (item.title || "").toLowerCase().includes(query) || 
+                (item.summary || "").toLowerCase().includes(query) || 
+                (item.source || "").toLowerCase().includes(query)
             );
         }
 
@@ -1330,7 +1330,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span class="feed-item-badge verified">VERIFIED REPORT</span>
                     </div>
                     <h4>${item.title}</h4>
-                    <p>${item.summary.substring(0, 100)}...</p>
+                    <p>${(item.summary || "").substring(0, 100)}...</p>
                     <div class="feed-item-footer">
                         <span style="font-weight: 700; color: var(--color-success);">TRUTH FACTOR: ${item.credibility_score}%</span>
                     </div>
@@ -1368,10 +1368,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openNewsModal(item) {
         activePreviewItem = item;
-        prevSource.textContent = item.source.toUpperCase();
-        prevTitle.textContent = item.title;
-        prevSummary.textContent = item.summary;
-        prevCategory.textContent = item.category.toUpperCase();
+        prevSource.textContent = (item.source || "").toUpperCase();
+        prevTitle.textContent = item.title || "";
+        prevSummary.textContent = item.summary || "";
+        prevCategory.textContent = (item.category || "").toUpperCase();
         prevScore.textContent = `${item.credibility_score}%`;
         prevImage.src = item.image_url;
         
@@ -1460,8 +1460,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span class="leak-source-check">${item.source_factcheck.toUpperCase()}</span>
                             <span class="leak-status-label ${badgeClass}">${badgeText}</span>
                         </div>
-                        <h3>${item.claim}</h3>
-                        <p>${item.summary}</p>
+                        <h3>${item.claim || ""}</h3>
+                        <p>${item.summary || ""}</p>
                     </div>
                 `;
                 
@@ -1885,7 +1885,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span class="short-news-time">VERIFIED</span>
                     </div>
                     <h4 class="short-news-title">${item.title}</h4>
-                    <p class="short-news-desc">${item.summary.substring(0, 75)}...</p>
+                    <p class="short-news-desc">${(item.summary || "").substring(0, 75)}...</p>
                     <a href="#" class="short-news-link">Read Full Analysis →</a>
                 `;
                 
@@ -1938,7 +1938,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span class="feed-item-badge verified">${item.is_india ? 'INDIA PRIORITY' : 'VERIFIED REPORT'}</span>
                         </div>
                         <h4>${item.title}</h4>
-                        <p>${item.summary.substring(0, 110)}...</p>
+                        <p>${(item.summary || "").substring(0, 110)}...</p>
                         <div class="feed-item-footer">
                             <span style="font-weight: 700; color: var(--color-success);">TRUTH FACTOR: ${item.credibility_score}%</span>
                         </div>
