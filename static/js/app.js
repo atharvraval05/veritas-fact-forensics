@@ -1692,7 +1692,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button class="btn btn-secondary btn-sm" id="logoutBtn">LOGOUT</button>
             </div>
         `;
-        document.getElementById("navVaultBtn").style.display = "block";
         
         document.getElementById("logoutBtn").addEventListener("click", async () => {
             if (supabaseClient) {
@@ -1711,9 +1710,8 @@ document.addEventListener("DOMContentLoaded", () => {
             tabLoginBtn.click();
             authModal.classList.add("active");
         });
-        document.getElementById("navVaultBtn").style.display = "none";
         if (state.activePage === "vault") {
-            navigateToPage("radar");
+            loadVaultPage();
         }
     }
 
@@ -1721,6 +1719,27 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadVaultPage() {
         if (!state.user) {
             writeLog("[SYS] Vault page requires active agent credentials.");
+            
+            const historyTableBody = document.getElementById("vaultHistoryTableBody");
+            const bookmarksGrid = document.getElementById("vaultBookmarksGrid");
+            
+            if (historyTableBody) {
+                historyTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--color-danger); padding: 40px 0;"><span style="font-size: 24px;">🔒</span><br><br><strong>SECURE LEDGER LOCKED</strong><br>Please authenticate via the Agent Login portal in the sidebar to access audit history.</td></tr>';
+            }
+            
+            if (bookmarksGrid) {
+                bookmarksGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--color-danger); padding: 40px; border: 1.5px dashed rgba(244,63,94,0.2); border-radius: 6px;"><span style="font-size: 24px;">🔒</span><br><br><strong>BOOKMARKED DOSSIERS SECURED</strong><br>Active agent authentication required. Log in to decrypt files.</div>';
+            }
+            
+            const historyCount = document.getElementById("historyCount");
+            const bookmarkCount = document.getElementById("bookmarkCount");
+            if (historyCount) historyCount.textContent = "LOCKED";
+            if (bookmarkCount) bookmarkCount.textContent = "LOCKED";
+            
+            const historyEmptyState = document.getElementById("historyEmptyState");
+            const bookmarksEmptyState = document.getElementById("bookmarksEmptyState");
+            if (historyEmptyState) historyEmptyState.style.display = "none";
+            if (bookmarksEmptyState) bookmarksEmptyState.style.display = "none";
             return;
         }
 
