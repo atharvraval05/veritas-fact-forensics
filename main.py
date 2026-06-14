@@ -52,17 +52,22 @@ def get_themed_fallback_image(title: str, category: str) -> str:
 
 async def resolve_og_image(client: httpx.AsyncClient, link: str) -> Optional[str]:
     try:
-        from googlenewsdecoder import new_decoderv1
-        decoded = new_decoderv1(link)
-        if decoded.get("status"):
-            real_url = decoded.get("decoded_url")
+        from utils.gnews_decoder import decode_google_news_url_async
+        real_url = await decode_google_news_url_async(client, link)
+        if real_url:
             resp = await client.get(real_url, headers={
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            }, timeout=3.0, follow_redirects=True)
+            }, timeout=3.5, follow_redirects=True)
             if resp.status_code == 200:
-                match = re.search(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\'](.*?)["\']', resp.text)
+                match = re.search(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\'](.*?)["\']', resp.text, re.IGNORECASE)
                 if not match:
-                    match = re.search(r'<meta[^>]+content=["\'](.*?)["\'][^>]+property=["\']og:image["\']', resp.text)
+                    match = re.search(r'<meta[^>]+content=["\'](.*?)["\'][^>]+property=["\']og:image["\']', resp.text, re.IGNORECASE)
+                if not match:
+                    match = re.search(r'<meta[^>]+name=["\']og:image["\'][^>]+content=["\'](.*?)["\']', resp.text, re.IGNORECASE)
+                if not match:
+                    match = re.search(r'<meta[^>]+content=["\'](.*?)["\'][^>]+name=["\']og:image["\']', resp.text, re.IGNORECASE)
+                if not match:
+                    match = re.search(r'<meta[^>]+property=["\']twitter:image["\'][^>]+content=["\'](.*?)["\']', resp.text, re.IGNORECASE)
                 if match:
                     img_url = match.group(1).strip()
                     if img_url.startswith(("http://", "https://")):
@@ -145,8 +150,8 @@ async def fetch_rss_news() -> list:
         # Sort: India news first (is_india DESC), then newest first (created_at DESC)
         articles.sort(key=lambda x: (x["is_india"], x["created_at"]), reverse=True)
         
-        # Concurrently resolve real-world og:image cover photos for the top 6 news bulletins
-        top_articles = articles[:6]
+        # Concurrently resolve real-world og:image cover photos for the top 15 news bulletins
+        top_articles = articles[:15]
         tasks = [resolve_og_image(client, art["url"]) for art in top_articles]
         resolved_images = await asyncio.gather(*tasks)
         

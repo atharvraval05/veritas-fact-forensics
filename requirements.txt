@@ -7,6 +7,3 @@ google-generativeai==0.8.6
 exifread==3.5.1
 supabase==2.31.0
 python-multipart==0.0.32
-googlenewsdecoder==0.1.7
-selectolax==0.4.10
-pysocks==1.7.1
