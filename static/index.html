@@ -547,9 +547,10 @@
                                     </div>
                                 </div>
 
-                                <div class="results-actions" style="margin-top: 24px;">
-                                    <button class="btn btn-secondary" id="saveBookmarkBtn">Bookmark dossier</button>
-                                    <button class="btn btn-secondary" id="shareReportBtn">Copy Share URL</button>
+                                <div class="results-actions" style="margin-top: 24px; display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary" id="saveBookmarkBtn" style="flex: 1;">Bookmark dossier</button>
+                                    <button class="btn btn-secondary" id="shareReportBtn" style="flex: 1;">Copy Share URL</button>
+                                    <button class="btn btn-primary" id="reportDiscussBtn" style="flex: 1; background: var(--color-primary); color: #ffffff;">Discuss with Analyst 💬</button>
                                 </div>
                             </div>
                         </div>
@@ -803,7 +804,7 @@
             </div>
             <div class="news-preview-actions">
                 <button class="btn btn-secondary" id="previewVerifyBtn">Analyze in Suite 🔬</button>
-                <button class="btn btn-secondary" id="previewStayBtn">Stay Here ✖</button>
+                <button class="btn btn-secondary" id="previewDiscussBtn" style="background: var(--color-primary); color: #ffffff;">Discuss with Analyst 💬</button>
                 <button class="btn btn-primary" id="previewSourceBtn">Go to Source 🔗</button>
             </div>
         </div>

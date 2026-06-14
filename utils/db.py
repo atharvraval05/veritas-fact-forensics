@@ -534,3 +534,14 @@ def delete_bookmark(user_id: str, scan_id: str) -> dict:
     mock_db.bookmarks = [b for b in mock_db.bookmarks if not (b.get("user_id") == user_id and b.get("scan_id") == scan_id)]
     return {"success": True}
 
+# Runtime cached news variable for feed matching
+_live_cached_news = []
+
+def set_live_cached_news(news_list: list):
+    global _live_cached_news
+    _live_cached_news = news_list
+
+def get_live_cached_news() -> list:
+    return _live_cached_news
+
+

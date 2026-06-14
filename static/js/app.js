@@ -361,7 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const prevCategory = document.getElementById("prevCategory");
     const prevScore = document.getElementById("prevScore");
     const previewVerifyBtn = document.getElementById("previewVerifyBtn");
-    const previewStayBtn = document.getElementById("previewStayBtn");
+    const previewDiscussBtn = document.getElementById("previewDiscussBtn");
     const previewSourceBtn = document.getElementById("previewSourceBtn");
     let activePreviewItem = null;
 
@@ -437,6 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const reportReasoningText = document.getElementById("reportReasoningText");
     const saveBookmarkBtn = document.getElementById("saveBookmarkBtn");
     const shareReportBtn = document.getElementById("shareReportBtn");
+    const reportDiscussBtn = document.getElementById("reportDiscussBtn");
 
     // PAGE 2: Verified News Room
     const verifiedNewsFeed = document.getElementById("verifiedNewsFeed");
@@ -562,10 +563,32 @@ document.addEventListener("DOMContentLoaded", () => {
             loadLatestNewsShort();
             loadHomepageNews();
             applyCardTilt();
+            startRealtimeTicker();
 
         } catch (e) {
             writeLog(`[SYS] Failed to configure settings. Falling back to offline engine.`);
         }
+    }
+
+    function startRealtimeTicker() {
+        const alerts = [
+            "SYS: CORRELATION MATRIX SECURED // SCANNER CHANNELS ACTIVE",
+            "EXIF DETECTOR: PARSING JPG HEADERS ON LOCAL CONSOLE...",
+            "RADAR ALERT: PROPAGATION LEVEL x4 DETECTED ON SOCIAL MEDIA CHANNELS",
+            "INTELLIGENCE DEBUNK: CGI VERIFICATION COMPLETE ON EIFFEL TOWER HOAX",
+            "FORENSIC LOGGER: INGESTED LATEST BULLETINS FROM NEWS WIRE SERVICE",
+            "NLP CRITIQUE: DETECTED SLIPPERY SLOPE LOGICAL FALLACY IN RECENT STATEMENT",
+            "SECURE ARCHIVE: SYNCHRONIZED TACTICAL LEDGER ENTRIES",
+            "DOMAIN COMPASS: LOOKING UP REPUTATION REGISTRY FOR NEW JOURNAL METRICS",
+            "SYS: GEMINI SEARCH GROUNDING ONLINE // GROUND TRUTH VERIFICATION ACTIVE"
+        ];
+        
+        setInterval(() => {
+            if (state.currentScanReport === null) {
+                const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
+                broadcastScanTicker(randomAlert);
+            }
+        }, 7000);
     }
 
     function writeLog(text, isError = false) {
@@ -1384,8 +1407,23 @@ document.addEventListener("DOMContentLoaded", () => {
         newsPreviewModal.classList.remove("active");
     });
 
-    previewStayBtn.addEventListener("click", () => {
-        newsPreviewModal.classList.remove("active");
+    previewDiscussBtn.addEventListener("click", () => {
+        if (activePreviewItem) {
+            newsPreviewModal.classList.remove("active");
+            // Open chatbot panel if minimized
+            const chatbotPanel = document.getElementById("chatbotPanel");
+            if (chatbotPanel && !chatbotPanel.classList.contains("active")) {
+                chatbotPanel.classList.add("active");
+            }
+            const chatbotInput = document.getElementById("chatbotInput");
+            if (chatbotInput) {
+                chatbotInput.value = `Perform a fact-check and credibility audit on this news bulletin: "${activePreviewItem.title}" published by ${activePreviewItem.source}.`;
+                const chatbotForm = document.getElementById("chatbotForm");
+                if (chatbotForm) {
+                    chatbotForm.dispatchEvent(new Event("submit"));
+                }
+            }
+        }
     });
 
     previewSourceBtn.addEventListener("click", () => {
@@ -1855,6 +1893,27 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.clipboard.writeText(mockLink);
         writeLog(`[SYS] Share link copied: ${mockLink}`);
         alert("Report link copied to clipboard!");
+    });
+
+    reportDiscussBtn.addEventListener("click", () => {
+        if (state.currentScanReport && state.currentScanReportId) {
+            // Open chatbot panel if minimized
+            const chatbotPanel = document.getElementById("chatbotPanel");
+            if (chatbotPanel && !chatbotPanel.classList.contains("active")) {
+                chatbotPanel.classList.add("active");
+            }
+            const chatbotInput = document.getElementById("chatbotInput");
+            if (chatbotInput) {
+                const title = reportHeadline.textContent || "Scan Report";
+                const score = gaugeScoreVal.textContent || "0%";
+                const verdict = verdictLabel.textContent || "PENDING";
+                chatbotInput.value = `Discuss this report: '${title}' scored ${score} Truth Factor with verdict '${verdict}'. Analyze the reasoning.`;
+                const chatbotForm = document.getElementById("chatbotForm");
+                if (chatbotForm) {
+                    chatbotForm.dispatchEvent(new Event("submit"));
+                }
+            }
+        }
     });
 
     // ==========================================

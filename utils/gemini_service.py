@@ -107,8 +107,20 @@ def find_related_local_news(text: str) -> list:
     words = [w for w in re.findall(r'\b\w+\b', text_lower) if len(w) > 3 and w not in STOP_WORDS]
     
     matches = []
-    from utils.db import get_global_news
-    all_news = get_global_news()
+    from utils.db import get_global_news, get_live_cached_news
+    # Combine static DB articles with live RSS streams to match scanned articles perfectly
+    all_news = get_global_news() + get_live_cached_news()
+    
+    # Deduplicate by title to avoid duplicate card render conflicts
+    seen_titles = set()
+    deduped_news = []
+    for item in all_news:
+        t_clean = item["title"].lower().strip()
+        if t_clean not in seen_titles:
+            seen_titles.add(t_clean)
+            deduped_news.append(item)
+            
+    all_news = deduped_news
     
     for item in all_news:
         score = 0
