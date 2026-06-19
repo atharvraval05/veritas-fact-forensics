@@ -320,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
         activeInputTab: "text",
         currentScanReport: null,
         newsList: [],
-        activeNewsFilter: "all-topics",
+        activeNewsFilter: "all-channels",
         newsSearchQuery: "",
         chatHistory: [] // list of {role: 'user'|'model', content: string}
     };
@@ -1320,8 +1320,8 @@ document.addEventListener("DOMContentLoaded", () => {
         verifiedNewsFeed.innerHTML = "";
         
         let filtered = state.newsList;
-        if (state.activeNewsFilter !== "all-topics") {
-            filtered = filtered.filter(item => item.category.toLowerCase() === state.activeNewsFilter.toLowerCase());
+        if (state.activeNewsFilter !== "all-channels") {
+            filtered = filtered.filter(item => (item.category || "General").toLowerCase() === state.activeNewsFilter.toLowerCase());
         }
 
         if (state.newsSearchQuery.trim() !== "") {
@@ -1345,11 +1345,11 @@ document.addEventListener("DOMContentLoaded", () => {
             card.innerHTML = `
                 <div class="feed-item-image-wrap">
                     <img src="${item.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&auto=format&fit=crop&q=80'}" alt="News Cover">
-                    <span class="feed-item-category-pill">${item.category.toUpperCase()}</span>
+                    <span class="feed-item-category-pill">${(item.category || "General").toUpperCase()}</span>
                 </div>
                 <div class="feed-item-content">
                     <div class="feed-item-header">
-                        <span class="feed-item-source">${item.source.toUpperCase()}</span>
+                        <span class="feed-item-source">${(item.source || "Unknown").toUpperCase()}</span>
                         <span class="feed-item-badge verified">VERIFIED REPORT</span>
                     </div>
                     <h4>${item.title}</h4>
@@ -1495,7 +1495,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                     <div class="leak-details">
                         <div class="leak-details-header">
-                            <span class="leak-source-check">${item.source_factcheck.toUpperCase()}</span>
+                            <span class="leak-source-check">${(item.source_factcheck || "Fact Checker").toUpperCase()}</span>
                             <span class="leak-status-label ${badgeClass}">${badgeText}</span>
                         </div>
                         <h3>${item.claim || ""}</h3>
@@ -1959,7 +1959,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 itemEl.className = "short-news-item";
                 itemEl.innerHTML = `
                     <div class="short-news-header">
-                        <span class="short-news-source">${item.source.toUpperCase()}</span>
+                        <span class="short-news-source">${(item.source || "Unknown").toUpperCase()}</span>
                         <span class="short-news-time">VERIFIED</span>
                     </div>
                     <h4 class="short-news-title">${item.title}</h4>
@@ -2008,11 +2008,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 card.innerHTML = `
                     <div class="feed-item-image-wrap">
                         <img src="${item.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&auto=format&fit=crop&q=80'}" alt="News Cover">
-                        <span class="feed-item-category-pill" style="background: ${item.is_india ? 'var(--color-secondary)' : 'var(--color-primary)'}; color: #ffffff;">${item.is_india ? 'INDIA ALERT' : item.category.toUpperCase()}</span>
+                        <span class="feed-item-category-pill" style="background: ${item.is_india ? 'var(--color-secondary)' : 'var(--color-primary)'}; color: #ffffff;">${item.is_india ? 'INDIA ALERT' : (item.category || "General").toUpperCase()}</span>
                     </div>
                     <div class="feed-item-content">
                         <div class="feed-item-header">
-                            <span class="feed-item-source">${item.source.toUpperCase()}</span>
+                            <span class="feed-item-source">${(item.source || "Unknown").toUpperCase()}</span>
                             <span class="feed-item-badge verified">${item.is_india ? 'INDIA PRIORITY' : 'VERIFIED REPORT'}</span>
                         </div>
                         <h4>${item.title}</h4>

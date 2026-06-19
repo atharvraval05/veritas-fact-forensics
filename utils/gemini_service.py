@@ -169,17 +169,6 @@ def find_related_local_news(text: str) -> list:
             for item in cat_articles:
                 matches.append((1, item))
                 
-    # If still no matches or not enough, pad with the highest credibility news items
-    if len(matches) < 3:
-        seen_ids = {item["id"] for _, item in matches}
-        sorted_all_news = sorted(all_news, key=lambda x: x["credibility_score"], reverse=True)
-        for item in sorted_all_news:
-            if item["id"] not in seen_ids:
-                matches.append((0, item))
-                seen_ids.add(item["id"])
-            if len(matches) >= 3:
-                break
-
     return [
         {
             "title": item["title"],
@@ -232,7 +221,15 @@ def analyze_article_text(text: str, url: str = None) -> dict:
     try:
         model = genai.GenerativeModel("gemini-2.5-flash")
         
+        current_date_str = datetime.now().strftime("%A, %B %d, %Y")
         prompt = f"""
+        Today's date is {current_date_str}. Use this as the current chronological context for verifying real-time events.
+        Important chronological guidance:
+        - The current year is 2026.
+        - Articles published today or recently may only mention the day and month (e.g., "June 19" or "June 20") without specifying the year "2026".
+        - Do not assume a claim is false simply because of tense (e.g. if it says "is visiting" and the visit is scheduled for today or tomorrow, it is True/Verified).
+        - Please perform Google Search queries (e.g., "Amit Shah Kolhapur visit June 19", "Amit Shah Kolhapur") and examine the results of the current news articles from June 2026.
+
         You are a real-time news verification and media forensics assistant. Your job is to verify the following news claim or article text against the live Google News database, Times of India (TOI), and other reputable international publishers.
         
         Perform a thorough cross-verification search:
@@ -279,9 +276,17 @@ def analyze_article_text(text: str, url: str = None) -> dict:
         "{text}"
         """
         
-        # Enable live Google Search grounding
-        tool = genai.types.protos.Tool(google_search=genai.types.protos.Tool.GoogleSearch())
-        response = model.generate_content(prompt, tools=[tool])
+        # Enable live Google Search grounding with robust fallbacks
+        try:
+            tool = {"google_search": {}}
+            response = model.generate_content(prompt, tools=[tool])
+        except Exception:
+            try:
+                tool = {"google_search_retrieval": {}}
+                response = model.generate_content(prompt, tools=[tool])
+            except Exception:
+                tool = genai.types.protos.Tool(google_search=genai.types.protos.Tool.GoogleSearch())
+                response = model.generate_content(prompt, tools=[tool])
         
         response_text = response.text.strip()
         if response_text.startswith("```"):
@@ -298,17 +303,34 @@ def analyze_article_text(text: str, url: str = None) -> dict:
         result["verdict_desc"] = verdict["description"]
         result["status_class"] = verdict["status_class"]
 
-        # Blend related news: prioritize local news first, followed by Gemini search results
-        local_news = find_related_local_news(text)
+        # Blend related news: prioritize Gemini search results first, followed by local keyword matches
         gemini_news = result.get("related_news", [])
         if not isinstance(gemini_news, list):
             gemini_news = []
             
+        local_news = find_related_local_news(text)
+        
         blended = []
         seen_urls = set()
         seen_titles = set()
         
-        # Add local news first
+        # Add Gemini news first (real-time grounding is highly relevant)
+        for item in gemini_news:
+            if not isinstance(item, dict) or "url" not in item or "title" not in item:
+                continue
+            url_clean = item["url"].lower().strip()
+            title_clean = item["title"].lower().strip()
+            if url_clean not in seen_urls and title_clean not in seen_titles:
+                blended.append({
+                    "title": item["title"],
+                    "source": item.get("source", "Google News"),
+                    "url": item["url"],
+                    "credibility_score": item.get("credibility_score", 90)
+                })
+                seen_urls.add(url_clean)
+                seen_titles.add(title_clean)
+
+        # Add local matched news next
         for item in local_news:
             url_clean = item["url"].lower().strip()
             title_clean = item["title"].lower().strip()
@@ -317,17 +339,35 @@ def analyze_article_text(text: str, url: str = None) -> dict:
                 seen_urls.add(url_clean)
                 seen_titles.add(title_clean)
                 
-        # Add Gemini news next
-        for item in gemini_news:
-            if not isinstance(item, dict) or "url" not in item or "title" not in item:
-                continue
-            url_clean = item["url"].lower().strip()
-            title_clean = item["title"].lower().strip()
-            if url_clean not in seen_urls and title_clean not in seen_titles:
-                blended.append(item)
-                seen_urls.add(url_clean)
-                seen_titles.add(title_clean)
-                
+        # If we still have fewer than 3 items, pad with the latest/highest credibility live news items as a last resort
+        if len(blended) < 3:
+            from utils.db import get_global_news, get_live_cached_news
+            all_news = get_global_news() + get_live_cached_news()
+            # Deduplicate all_news
+            seen_local_titles = set()
+            deduped_all = []
+            for item in all_news:
+                t_clean = item["title"].lower().strip()
+                if t_clean not in seen_local_titles:
+                    seen_local_titles.add(t_clean)
+                    deduped_all.append(item)
+            
+            sorted_all_news = sorted(deduped_all, key=lambda x: x["credibility_score"], reverse=True)
+            for item in sorted_all_news:
+                url_clean = item["url"].lower().strip()
+                title_clean = item["title"].lower().strip()
+                if url_clean not in seen_urls and title_clean not in seen_titles:
+                    blended.append({
+                        "title": item["title"],
+                        "source": item["source"],
+                        "url": item["url"],
+                        "credibility_score": item["credibility_score"]
+                    })
+                    seen_urls.add(url_clean)
+                    seen_titles.add(title_clean)
+                if len(blended) >= 3:
+                    break
+                    
         result["related_news"] = blended[:3]
         return result
         

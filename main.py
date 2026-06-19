@@ -510,9 +510,33 @@ async def analyze_video_route(file: UploadFile = File(...), user_id: Optional[st
         "analysis": result
     }
 
+import time
+
+# Cache to prevent slow RSS feeds load times and rate limiting
+FEEDS_CACHE = {
+    "global_news": None,
+    "debunk_rumors": None,
+    "last_updated": 0.0
+}
+CACHE_DURATION_SECS = 300.0  # 5 minutes cache
+
 @app.get("/api/feeds")
 async def get_feeds():
-    live_news = await fetch_rss_news()
+    current_time = time.time()
+    if (FEEDS_CACHE["global_news"] is not None and 
+        FEEDS_CACHE["debunk_rumors"] is not None and 
+        (current_time - FEEDS_CACHE["last_updated"]) < CACHE_DURATION_SECS):
+        return {
+            "global_news": FEEDS_CACHE["global_news"],
+            "debunk_rumors": FEEDS_CACHE["debunk_rumors"]
+        }
+        
+    try:
+        live_news = await fetch_rss_news()
+    except Exception as e:
+        print(f"[Feeds API] News fetch exception: {e}")
+        live_news = []
+        
     if not live_news:
         live_news = get_global_news()
     else:
@@ -520,10 +544,20 @@ async def get_feeds():
         from utils.db import set_live_cached_news
         set_live_cached_news(live_news)
         
-    live_rumors = await fetch_rss_rumors()
+    try:
+        live_rumors = await fetch_rss_rumors()
+    except Exception as e:
+        print(f"[Feeds API] Rumors fetch exception: {e}")
+        live_rumors = []
+        
     if not live_rumors:
         live_rumors = get_debunk_rumors()
         
+    # Update cache
+    FEEDS_CACHE["global_news"] = live_news
+    FEEDS_CACHE["debunk_rumors"] = live_rumors
+    FEEDS_CACHE["last_updated"] = current_time
+    
     return {
         "global_news": live_news,
         "debunk_rumors": live_rumors
@@ -574,7 +608,9 @@ async def chat_endpoint(req: ChatRequest):
             import google.generativeai as genai
             model = genai.GenerativeModel("gemini-2.5-flash")
             
+            current_date_str = datetime.now().strftime("%A, %B %d, %Y")
             system_prompt = (
+                f"Today's date is {current_date_str}. "
                 "You are the Veritas Forensics AI Assistant. You help users understand media integrity, "
                 "forensic methods, deepfake indicators, logical fallacies, and factual news reporting. "
                 "Be concise, highly professional, and format your response in clear Markdown. "
